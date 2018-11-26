@@ -1,0 +1,6 @@
+django-environ
+Django
+psycopg2-binary
+raven
+djangorestframework
+django-cors-headers
