@@ -5,3 +5,4 @@ raven
 djangorestframework
 django-cors-headers
 django-helusers
+djangorestframework-gis
