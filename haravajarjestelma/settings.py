@@ -1,9 +1,8 @@
 import os
 
-from django.utils.translation import ugettext_lazy as _
-
 import environ
 import raven
+from django.utils.translation import ugettext_lazy as _
 
 checkout_dir = environ.Path(__file__) - 2
 assert os.path.exists(checkout_dir('manage.py'))
@@ -79,6 +78,7 @@ USE_TZ = True
 
 
 INSTALLED_APPS = [
+    'helusers',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'events',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,8 @@ TEMPLATES = [
 ]
 
 SITE_ID = 1
+
+AUTH_USER_MODEL = 'users.User'
 
 DEFAULT_SRID = 4326
 

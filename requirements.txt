@@ -6,10 +6,21 @@
 #
 --no-binary :all:
 
+certifi==2018.11.29       # via requests
+chardet==3.0.4            # via requests
 django-cors-headers==2.4.0
 django-environ==0.4.5
+django-helusers==0.4.2
 django==2.1.3
 djangorestframework==3.9.0
+drf-oidc-auth==0.9        # via django-helusers
+future==0.17.1            # via pyjwkest
+idna==2.8                 # via requests
 psycopg2-binary==2.7.6.1
+pycryptodomex==3.7.2      # via pyjwkest
+pyjwkest==1.4.0           # via drf-oidc-auth
 pytz==2018.7              # via django
 raven==6.9.0
+requests==2.21.0          # via django-helusers, pyjwkest
+six==1.12.0               # via pyjwkest
+urllib3==1.24.1           # via requests
