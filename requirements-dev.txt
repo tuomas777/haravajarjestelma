@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file requirements-dev.txt requirements-dev.in
 #
-appnope==0.1.0            # via ipython
 atomicwrites==1.2.1       # via pytest
 attrs==18.2.0             # via pytest
 autopep8==1.4.3
@@ -13,9 +12,9 @@ coverage==4.5.2           # via pytest-cov
 decorator==4.3.0          # via ipython, traitlets
 flake8==3.6.0
 ipython-genutils==0.2.0   # via traitlets
-ipython==7.1.1
+ipython==7.2.0
 isort==4.3.4
-jedi==0.13.1              # via ipython
+jedi==0.13.2              # via ipython
 mccabe==0.6.1             # via flake8
 more-itertools==4.3.0     # via pytest
 parso==0.3.1              # via jedi
@@ -27,10 +26,10 @@ ptyprocess==0.6.0         # via pexpect
 py==1.7.0                 # via pytest
 pycodestyle==2.4.0        # via autopep8, flake8
 pyflakes==2.0.0           # via flake8
-pygments==2.3.0           # via ipython
+pygments==2.3.1           # via ipython
 pytest-cov==2.6.0
 pytest-django==3.4.4
-pytest==4.0.1
-six==1.11.0               # via more-itertools, prompt-toolkit, pytest, traitlets
+pytest==4.0.2
+six==1.12.0               # via more-itertools, prompt-toolkit, pytest, traitlets
 traitlets==4.3.2          # via ipython
 wcwidth==0.1.7            # via prompt-toolkit

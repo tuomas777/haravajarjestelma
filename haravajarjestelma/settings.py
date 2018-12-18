@@ -1,8 +1,9 @@
 import os
 
+from django.utils.translation import ugettext_lazy as _
+
 import environ
 import raven
-from django.utils.translation import ugettext_lazy as _
 
 checkout_dir = environ.Path(__file__) - 2
 assert os.path.exists(checkout_dir('manage.py'))
@@ -71,13 +72,14 @@ LANGUAGES = (
     ('en', _('English')),
     ('sv', _('Swedish'))
 )
-TIME_ZONE = 'Europe/Helsinki'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
 
 INSTALLED_APPS = [
+    'helusers',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -89,7 +91,11 @@ INSTALLED_APPS = [
 
     'raven.contrib.django.raven_compat',
     'rest_framework',
+    'rest_framework_gis',
     'corsheaders',
+
+    'events',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -121,6 +127,8 @@ TEMPLATES = [
 
 SITE_ID = 1
 
+AUTH_USER_MODEL = 'users.User'
+
 DEFAULT_SRID = 4326
 
 CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST')
@@ -128,9 +136,6 @@ CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST')
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ),
 }
 
 # local_settings.py can be used to override settings
