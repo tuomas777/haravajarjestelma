@@ -30,6 +30,7 @@ env = environ.Env(
     EMAIL_URL=(str, 'consolemail://'),
     SENTRY_DSN=(str, ''),
     CORS_ORIGIN_WHITELIST=(list, []),
+    CORS_ORIGIN_ALLOW_ALL=(bool, False),
     NOTIFICATIONS_ENABLED=(bool, False),
 )
 if os.path.exists(env_file):
@@ -131,7 +132,8 @@ AUTH_USER_MODEL = 'users.User'
 
 DEFAULT_SRID = 4326
 
-CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST')
+CORS_ORIGIN_WHITELIST = env('CORS_ORIGIN_WHITELIST')
+CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL')
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
