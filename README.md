@@ -16,6 +16,10 @@
 5. Create superuser if needed: 
     * `docker exec -it haravajarjestelma python manage.py createsuperuser`
 
+6. Import geo data
+    * `docker exec -it haravajarjestelma python manage.py geo_import --municipalities finland`
+    * `docker exec -it haravajarjestelma python manage.py geo_import --divisions helsinki`
+
 The project is now running at [localhost:8000](http://localhost:8000)
 
 ## Development without Docker
@@ -52,6 +56,19 @@ Create extensions in the database
 Allow user to create test database
 
     sudo -u postgres psql -c "ALTER USER haravajarjestelma CREATEDB;"
+
+Run migrations if needed:
+
+    python manage.py migrate
+
+Create superuser if needed:
+
+    python manage.py createsuperuser
+
+Import geo data
+
+    docker exec -it haravajarjestelma python manage.py geo_import --municipalities finland
+    docker exec -it haravajarjestelma python manage.py geo_import --divisions helsinki
 
 ### Daily running
 

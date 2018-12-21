@@ -1,9 +1,8 @@
 import os
 
-from django.utils.translation import ugettext_lazy as _
-
 import environ
 import raven
+from django.utils.translation import ugettext_lazy as _
 
 checkout_dir = environ.Path(__file__) - 2
 assert os.path.exists(checkout_dir('manage.py'))
@@ -94,9 +93,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'corsheaders',
+    'munigeo',
 
     'events',
     'users',
+    'areas',
 ]
 
 MIDDLEWARE = [

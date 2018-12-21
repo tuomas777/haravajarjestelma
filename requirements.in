@@ -6,3 +6,5 @@ djangorestframework
 django-cors-headers
 django-helusers
 djangorestframework-gis
+django-munigeo
+django-parler-rest
