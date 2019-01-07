@@ -19,6 +19,7 @@
 6. Import geo data
     * `docker exec -it haravajarjestelma python manage.py geo_import --municipalities finland`
     * `docker exec -it haravajarjestelma python manage.py geo_import --divisions helsinki`
+    * `docker exec -it haravajarjestelma python manage.py geo_import --addresses helsinki`
 
 The project is now running at [localhost:8000](http://localhost:8000)
 
@@ -67,8 +68,9 @@ Create superuser if needed:
 
 Import geo data
 
-    docker exec -it haravajarjestelma python manage.py geo_import --municipalities finland
-    docker exec -it haravajarjestelma python manage.py geo_import --divisions helsinki
+    python manage.py geo_import --municipalities finland
+    python manage.py geo_import --divisions helsinki
+    python manage.py geo_import --addresses helsinki
 
 ### Daily running
 

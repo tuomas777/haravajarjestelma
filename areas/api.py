@@ -1,9 +1,12 @@
 from collections import defaultdict
 
-from munigeo.models import AdministrativeDivision
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
+from munigeo.models import Address, AdministrativeDivision, Street
 from parler_rest.fields import TranslatedFieldsField
 from parler_rest.serializers import TranslatableModelSerializer
 from rest_framework import mixins, serializers, viewsets
+from rest_framework.response import Response
 
 
 class TranslatedModelSerializer(TranslatableModelSerializer):
@@ -44,7 +47,7 @@ class NeigborhoodSerializer(AdministrativeDivisionSerializer):
         super().__init__(*args, **kwargs)
         self.fields['sub_districts'] = serializers.SerializerMethodField()
 
-        sub_district_qs = AdministrativeDivision.objects.filter(
+        sub_district_qs = self._get_base_sub_district_qs().filter(
             type__type='sub_district'
         ).exclude(
             origin_id='Aluemeri'  # wtf
@@ -75,6 +78,29 @@ class NeigborhoodSerializer(AdministrativeDivisionSerializer):
         serializer = AdministrativeDivisionSerializer(sub_districts, many=True, context=self.context)
         return serializer.data
 
+    def _get_base_sub_district_qs(self):
+        if not isinstance(self.instance, AdministrativeDivision):
+            return AdministrativeDivision.objects.all()
+
+        # when we are dealing with a single neighborhood, we can skip some unnecessary work by fetching only
+        # its sub districts instead of all districts
+        try:
+            int_origin_id = int(self.instance.origin_id)
+        except ValueError:
+            return AdministrativeDivision.objects.none()
+
+        if int_origin_id >= 10:  # only neighborhoods with origin id >= 10 can have sub districts
+            origin_id_min = self.instance.origin_id + '0'
+            origin_id_max = self.instance.origin_id + '9'
+
+            # filter sub districts based on the neighborhood's id,
+            # for example for neighborhood 32 filter sub districts by id 320 - 329
+            return AdministrativeDivision.objects.filter(
+                type__type='sub_district', origin_id__gte=origin_id_min, origin_id__lte=origin_id_max
+            )
+        else:
+            return AdministrativeDivision.objects.none()
+
 
 class NeighborhoodViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = AdministrativeDivision.objects.filter(
@@ -87,3 +113,52 @@ class NeighborhoodViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         'origin_id'
     )
     serializer_class = NeigborhoodSerializer
+
+
+class GeoQueryParamSerializer(serializers.Serializer):
+    lat = serializers.FloatField(required=True)
+    lon = serializers.FloatField(required=True)
+
+
+class StreetSerializer(TranslatedModelSerializer):
+    class Meta:
+        model = Street
+        fields = ('name', 'translations')
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    street = StreetSerializer()
+    distance = serializers.FloatField(source='distance.m')
+
+    class Meta:
+        model = Address
+        exclude = ('id', 'modified_at')
+
+
+class GeoQueryViewSet(viewsets.ViewSet):
+    def list(self, request, format=None):
+        param_serializer = GeoQueryParamSerializer(data=request.query_params)
+        if not param_serializer.is_valid():
+            return Response(param_serializer.errors)
+
+        point = Point(param_serializer.validated_data['lon'], param_serializer.validated_data['lat'])
+        areas = AdministrativeDivision.objects.filter(
+            type__type='neighborhood',
+            geometry__boundary__contains=point,
+        )
+        neighborhood = areas[0] if areas else None
+        address = self.get_closest_address(point)
+
+        data = {
+            'neighborhood': NeigborhoodSerializer(neighborhood).data if neighborhood else None,
+            'closest_address': AddressSerializer(address).data if address else None,
+        }
+
+        return Response(data)
+
+    @classmethod
+    def get_closest_address(cls, point):
+        try:
+            return Address.objects.annotate(distance=Distance('location', point)).order_by('distance')[0]
+        except KeyError:
+            return None
