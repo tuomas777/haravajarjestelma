@@ -1,0 +1,112 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-10 21:18+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "name"
+msgstr "nimi"
+
+msgid "boundary"
+msgstr "raja"
+
+msgid "contract zone"
+msgstr "talkoopiiri"
+
+msgid "contract zones"
+msgstr "talkoopiirit"
+
+msgid "waiting for approval"
+msgstr "odottaa hyväksyntää"
+
+msgid "approved"
+msgstr "hyväksytty"
+
+msgid "state"
+msgstr "tila"
+
+msgid "created at"
+msgstr "luotu"
+
+msgid "modified at"
+msgstr "muokattu"
+
+msgid "description"
+msgstr "kuvaus"
+
+msgid "start time"
+msgstr "alkuaika"
+
+msgid "end time"
+msgstr "loppuaika"
+
+msgid "location"
+msgstr "sijainti"
+
+msgid "organizer first name"
+msgstr "järjestäjän etunimi"
+
+msgid "organizer last name"
+msgstr "järjestäjän sukunimi"
+
+msgid "organizer email"
+msgstr "järjestäjän sähköposti"
+
+msgid "organizer phone"
+msgstr "järjestäjän puhelinnumero"
+
+msgid "estimated attendee count"
+msgstr "arvioitu osallistujamäärä"
+
+msgid "targets"
+msgstr "siivouskohteet"
+
+msgid "maintenance location"
+msgstr "sijainti, johon tarvikkeet tuodaan ja roskat viedään"
+
+msgid "additional information"
+msgstr "lisätiedot"
+
+msgid "trash bag count"
+msgstr "jätesäkkejä"
+
+msgid "trash picker count"
+msgstr "jätepihtejä"
+
+msgid "has a roll-off dumpster"
+msgstr "siirtolava"
+
+msgid "event"
+msgstr "tapahtuma"
+
+msgid "events"
+msgstr "tapahtumat"
+
+msgid "Finnish"
+msgstr "suomi"
+
+msgid "English"
+msgstr "englanti"
+
+msgid "Swedish"
+msgstr "ruotsi"
+
+msgid "official"
+msgstr "virkailija"
+
+msgid "contractor"
+msgstr "alihankkija"
