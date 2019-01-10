@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from areas.models import ContractZone
+
 
 class Event(models.Model):
     WAITING_FOR_APPROVAL = 'waiting_for_approval'
@@ -35,6 +37,11 @@ class Event(models.Model):
     trash_picker_count = models.PositiveIntegerField(verbose_name=_('trash picker count'))
     has_roll_off_dumpster = models.BooleanField(verbose_name=_('has a roll-off dumpster'), default=False)
 
+    contract_zone = models.ForeignKey(
+        ContractZone, verbose_name=_('contract zone'), related_name='events', blank=True, null=True,
+        on_delete=models.SET_NULL
+    )
+
     class Meta:
         verbose_name = _('event')
         verbose_name_plural = _('events')
@@ -42,3 +49,11 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        try:
+            self.contract_zone = ContractZone.objects.get(boundary__contains=self.location)
+        except ContractZone.DoesNotExist:
+            self.contract_zone = None
+
+        super().save(*args, **kwargs)
