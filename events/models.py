@@ -5,6 +5,18 @@ from django.utils.translation import ugettext_lazy as _
 from areas.models import ContractZone
 
 
+class EventQuerySet(models.QuerySet):
+    def filter_for_user(self, user):
+        if not user.is_authenticated:
+            return self.none()
+        elif user.is_superuser or user.is_official:
+            return self
+        elif user.is_contractor:
+            return self.filter(contractor_zone__in=user.contract_zones.all())
+        else:
+            return self.none()
+
+
 class Event(models.Model):
     WAITING_FOR_APPROVAL = 'waiting_for_approval'
     APPROVED = 'approved'
@@ -41,6 +53,8 @@ class Event(models.Model):
         ContractZone, verbose_name=_('contract zone'), related_name='events', blank=True, null=True,
         on_delete=models.SET_NULL
     )
+
+    objects = EventQuerySet.as_manager()
 
     class Meta:
         verbose_name = _('event')
