@@ -65,9 +65,5 @@ class Event(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        try:
-            self.contract_zone = ContractZone.objects.get(boundary__contains=self.location)
-        except ContractZone.DoesNotExist:
-            self.contract_zone = None
-
+        self.contract_zone = ContractZone.objects.filter(boundary__covers=self.location).first()
         super().save(*args, **kwargs)
