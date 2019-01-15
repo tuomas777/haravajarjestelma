@@ -30,6 +30,7 @@ EXPECTED_EVENT_KEYS = {
     'trash_bag_count',
     'trash_picker_count',
     'contract_zone',
+    'equipment_information',
 }
 
 EVENT_DATA = {
@@ -55,6 +56,7 @@ EVENT_DATA = {
     'has_roll_off_dumpster': True,
     'trash_bag_count': 10000,
     'trash_picker_count': 7,
+    'equipment_information': 'Ei lisätietoja tarvikkeista.',
 }
 
 
@@ -78,6 +80,8 @@ def check_received_event_data(event_data, event_obj):
         'has_roll_off_dumpster',
         'trash_bag_count',
         'trash_picker_count',
+        'equipment_information',
+
     )
     for field_name in simple_fields:
         assert event_data[field_name] == getattr(event_obj, field_name), 'Field "{}" does not match'.format(field_name)
