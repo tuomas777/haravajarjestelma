@@ -7,8 +7,8 @@ from events.api import EventViewSet
 
 router = DefaultRouter()
 router.register('event', EventViewSet)
-router.register('neighborhood', NeighborhoodViewSet, base_name='neighborhood')
-router.register('geo_query', GeoQueryViewSet, base_name='geo_query')
+router.register('neighborhood', NeighborhoodViewSet, basename='neighborhood')
+router.register('geo_query', GeoQueryViewSet, basename='geo_query')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

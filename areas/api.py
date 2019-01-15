@@ -142,11 +142,10 @@ class GeoQueryViewSet(viewsets.ViewSet):
             return Response(param_serializer.errors)
 
         point = Point(param_serializer.validated_data['lon'], param_serializer.validated_data['lat'])
-        areas = AdministrativeDivision.objects.filter(
+        neighborhood = AdministrativeDivision.objects.filter(
             type__type='neighborhood',
-            geometry__boundary__contains=point,
-        )
-        neighborhood = areas[0] if areas else None
+            geometry__boundary__covers=point,
+        ).first()
         address = self.get_closest_address(point)
 
         data = {

@@ -12,7 +12,7 @@ class EventQuerySet(models.QuerySet):
         elif user.is_superuser or user.is_official:
             return self
         elif user.is_contractor:
-            return self.filter(contractor_zone__in=user.contract_zones.all())
+            return self.filter(contract_zone__in=user.contract_zones.all())
         else:
             return self.none()
 
@@ -65,9 +65,5 @@ class Event(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        try:
-            self.contract_zone = ContractZone.objects.get(boundary__contains=self.location)
-        except ContractZone.DoesNotExist:
-            self.contract_zone = None
-
+        self.contract_zone = ContractZone.objects.filter(boundary__covers=self.location).first()
         super().save(*args, **kwargs)
