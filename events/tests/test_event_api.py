@@ -162,7 +162,7 @@ def test_official_patch_event(official_api_client, event):
     assert updated_event.state == 'approved'
 
 
-def test_unautenticated_user_cannot_modify_or_delete_event(user_api_client, event_with_contract_zone):
+def test_unauthenticated_user_cannot_modify_or_delete_event(user_api_client, event_with_contract_zone):
     url = get_detail_url(event_with_contract_zone)
 
     put(user_api_client, url, EVENT_DATA, 404)
@@ -193,3 +193,14 @@ def test_official_can_modify_and_delete_event(official_api_client, event_with_co
     put(official_api_client, url, EVENT_DATA)
     patch(official_api_client, url, EVENT_DATA)
     delete(official_api_client, url)
+
+
+def test_event_must_start_before_ending(user_api_client):
+    EVENT_DATA['start_time'] = timezone.now() + timedelta(days=8, hours=6)
+    EVENT_DATA['end_time'] = timezone.now() + timedelta(days=8, hours=5)
+    post(user_api_client, LIST_URL, EVENT_DATA, 400)
+
+
+def test_new_event_start_must_be_at_least_1_week_from_now(user_api_client):
+    EVENT_DATA['start_time'] = timezone.now() + timedelta(days=6, hours=6)
+    post(user_api_client, LIST_URL, EVENT_DATA, 400)
