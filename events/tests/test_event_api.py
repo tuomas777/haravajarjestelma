@@ -1,5 +1,6 @@
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
+from django.conf import settings
 from django.utils import timezone
 from rest_framework.reverse import reverse
 
@@ -81,7 +82,6 @@ def check_received_event_data(event_data, event_obj):
         'trash_bag_count',
         'trash_picker_count',
         'equipment_information',
-
     )
     for field_name in simple_fields:
         assert event_data[field_name] == getattr(event_obj, field_name), 'Field "{}" does not match'.format(field_name)
@@ -196,11 +196,24 @@ def test_official_can_modify_and_delete_event(official_api_client, event_with_co
 
 
 def test_event_must_start_before_ending(user_api_client):
-    EVENT_DATA['start_time'] = timezone.now() + timedelta(days=8, hours=6)
-    EVENT_DATA['end_time'] = timezone.now() + timedelta(days=8, hours=5)
-    post(user_api_client, LIST_URL, EVENT_DATA, 400)
+    full_days_needed = settings.EVENT_MINIMUM_DAYS_BEFORE_START
+    EVENT_DATA['start_time'] = timezone.now() + timedelta(days=full_days_needed, hours=6)
+    EVENT_DATA['end_time'] = timezone.now() + timedelta(days=full_days_needed, hours=5)
+    ret = post(user_api_client, LIST_URL, EVENT_DATA, 400)
+    assert('Event must start before ending' in ret['non_field_errors'][0])
 
 
-def test_new_event_start_must_be_at_least_1_week_from_now(user_api_client):
-    EVENT_DATA['start_time'] = timezone.now() + timedelta(days=6, hours=6)
+def test_new_event_start_must_be_sufficiently_many_calendar_days_in_future(user_api_client):
+    full_days_needed = settings.EVENT_MINIMUM_DAYS_BEFORE_START
+    now = timezone.now()
+    beginning_of_today = datetime.combine(now.date(), time(tzinfo=now.tzinfo))
+
+    # "worst case": event submitted at 00:00, start is the last disallowed minute (at 23:59, full_days_needed later)
+    EVENT_DATA['start_time'] = beginning_of_today + timedelta(days=full_days_needed, hours=23, minutes=59)
+    EVENT_DATA['end_time'] = EVENT_DATA['start_time'] + timedelta(hours=6)
     post(user_api_client, LIST_URL, EVENT_DATA, 400)
+
+    # event submitted on 00:00, start is the first allowed minute (at 00:00, full_days_needed+1 later)
+    EVENT_DATA['start_time'] = beginning_of_today + timedelta(days=full_days_needed+1)
+    EVENT_DATA['end_time'] = EVENT_DATA['start_time'] + timedelta(hours=6)
+    post(user_api_client, LIST_URL, EVENT_DATA, 201)

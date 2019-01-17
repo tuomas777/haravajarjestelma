@@ -1,5 +1,6 @@
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, viewsets
@@ -13,17 +14,19 @@ class EventSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, data):
-        start_time = data.get('start_time', None)
-        end_time = data.get('end_time', None)
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+        now = timezone.now()
 
         # PATCH updates only 'state', so check that start and end times are present in the data
         if (start_time and end_time) and (start_time > end_time):
             raise serializers.ValidationError(_('Event must start before ending.'))
 
-        # TODO should the 7 day minimum waiting time be configurable from e.g. admin?
-        # discussion can be had in https://github.com/City-of-Helsinki/haravajarjestelma/issues/8
-        if start_time and (start_time < timezone.now() + timedelta(days=7)):
-            raise serializers.ValidationError(_('Event cannot start earlier than a week from now.'))
+        min_days = settings.EVENT_MINIMUM_DAYS_BEFORE_START
+        beginning_of_today = datetime.combine(now.date(), time(), tzinfo=now.tzinfo)
+        if start_time and (start_time < beginning_of_today + timedelta(days=min_days+1)):
+            error_msg = _('Event cannot start earlier than {} full days from now.').format(min_days)
+            raise serializers.ValidationError(error_msg)
         return data
 
 
