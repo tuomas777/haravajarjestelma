@@ -4,8 +4,8 @@ from django.conf import settings
 from django.utils import timezone
 from rest_framework.reverse import reverse
 
+from common.tests.utils import delete, get, patch, post, put
 from events.models import Event
-from events.tests.utils import delete, get, patch, post, put
 
 LIST_URL = reverse('v1:event-list')
 
