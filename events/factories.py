@@ -26,6 +26,7 @@ class EventFactory(factory.django.DjangoModelFactory):
     additional_information = factory.Faker('text')
     trash_bag_count = factory.fuzzy.FuzzyInteger(1, 500)
     trash_picker_count = factory.fuzzy.FuzzyInteger(1, 50)
+    equipment_information = factory.Faker('text')
 
     class Meta:
         model = Event
