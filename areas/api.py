@@ -157,7 +157,4 @@ class GeoQueryViewSet(viewsets.ViewSet):
 
     @classmethod
     def get_closest_address(cls, point):
-        try:
-            return Address.objects.annotate(distance=Distance('location', point)).order_by('distance')[0]
-        except KeyError:
-            return None
+        return Address.objects.annotate(distance=Distance('location', point)).order_by('distance').first()

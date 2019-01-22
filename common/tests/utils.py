@@ -23,3 +23,13 @@ def _execute_request(api_client, method, url, status_code, data=None):
     assert response.status_code == status_code, 'Expected status code {} but got {} with data {}'.format(
         status_code, response.status_code, response.data)
     return response.data
+
+
+def check_translated_field_data_matches_object(data, obj, field_name):
+    translations = obj.translations.exclude(**{field_name: ''})
+    if translations:
+        assert len(data[field_name]) == translations.count()
+        for translation in translations:
+            assert data[field_name][translation.language_code] == translation.name
+    else:
+        assert data[field_name] is None
