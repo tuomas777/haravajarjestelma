@@ -9,3 +9,4 @@ djangorestframework-gis
 django-munigeo
 django-parler-rest
 django-filter
+holidays
