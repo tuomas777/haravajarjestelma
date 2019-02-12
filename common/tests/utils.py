@@ -20,9 +20,10 @@ def delete(api_client, url, status_code=204):
 
 def _execute_request(api_client, method, url, status_code, data=None):
     response = getattr(api_client, method)(url, data=data)
+    response_data = getattr(response, 'data', None)
     assert response.status_code == status_code, 'Expected status code {} but got {} with data {}'.format(
-        status_code, response.status_code, response.data)
-    return response.data
+        status_code, response.status_code, response_data)
+    return response_data
 
 
 def check_translated_field_data_matches_object(data, obj, field_name):
