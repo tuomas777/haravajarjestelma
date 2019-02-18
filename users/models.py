@@ -11,3 +11,7 @@ class User(AbstractUser):
     contract_zones = models.ManyToManyField(
         ContractZone, verbose_name=_('contract zones'), related_name='contractors', blank=True
     )
+
+
+def can_view_contract_zone_details(user):
+    return user.is_authenticated and user.is_official
