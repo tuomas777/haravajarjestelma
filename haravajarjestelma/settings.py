@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'corsheaders',
     'munigeo',
+    'django_filters',
 
     'events',
     'users',
@@ -160,6 +161,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'DEFAULT_AUTHENTICATION_CLASSES': ('helusers.oidc.ApiTokenAuthentication',),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }
 
 # local_settings.py can be used to override settings

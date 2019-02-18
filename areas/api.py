@@ -2,11 +2,16 @@ from collections import defaultdict
 
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.db.models import Count, Q, Sum
+from django_filters import rest_framework as filters
 from munigeo.models import Address, AdministrativeDivision, Street
 from parler_rest.fields import TranslatedFieldsField
 from parler_rest.serializers import TranslatableModelSerializer
 from rest_framework import mixins, serializers, viewsets
 from rest_framework.response import Response
+
+from areas.models import ContractZone
+from users.models import can_view_contract_zone_details
 
 
 class TranslatedModelSerializer(TranslatableModelSerializer):
@@ -158,3 +163,45 @@ class GeoQueryViewSet(viewsets.ViewSet):
     @classmethod
     def get_closest_address(cls, point):
         return Address.objects.annotate(distance=Distance('location', point)).order_by('distance').first()
+
+
+class ContractZoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContractZone
+        fields = ('id', 'name')
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        if all((
+            'request' in self.context,
+            can_view_contract_zone_details(self.context['request'].user),
+            hasattr(instance, 'event_count'),
+            hasattr(instance, 'estimated_attendee_count'),
+        )):
+            data.update(
+                event_count=instance.event_count or 0,
+                estimated_attendee_count=instance.estimated_attendee_count or 0,
+            )
+
+        return data
+
+
+class ContractZoneFilter(filters.FilterSet):
+    stats_year = filters.NumberFilter(method='filter_stats')
+
+    def filter_stats(self, queryset, name, value):
+        if can_view_contract_zone_details(self.request.user):
+            year_filter = Q(events__start_time__date__year=value)
+            queryset = queryset.annotate(
+                event_count=Count('events', filter=year_filter),
+                estimated_attendee_count=Sum('events__estimated_attendee_count', filter=year_filter),
+            )
+
+        return queryset
+
+
+class ContractZoneViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ContractZone.objects.all()
+    serializer_class = ContractZoneSerializer
+    filterset_class = ContractZoneFilter
