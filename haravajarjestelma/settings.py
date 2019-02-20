@@ -37,6 +37,7 @@ env = environ.Env(
     TOKEN_AUTH_FIELD_FOR_CONSENTS=(str, ''),
     TOKEN_AUTH_REQUIRE_SCOPE_PREFIX=(bool, True),
     EVENT_MINIMUM_DAYS_BEFORE_START=(int, 7),
+    EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE=(int, 3),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -78,7 +79,7 @@ LANGUAGES = (
     ('en', _('English')),
     ('sv', _('Swedish'))
 )
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Helsinki'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -144,6 +145,7 @@ AUTH_USER_MODEL = 'users.User'
 DEFAULT_SRID = 4326
 
 EVENT_MINIMUM_DAYS_BEFORE_START = env('EVENT_MINIMUM_DAYS_BEFORE_START')
+EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE = env('EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE')
 
 CORS_ORIGIN_WHITELIST = env('CORS_ORIGIN_WHITELIST')
 CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL')

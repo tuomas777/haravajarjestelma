@@ -140,6 +140,19 @@ class AddressSerializer(serializers.ModelSerializer):
         exclude = ('id', 'modified_at')
 
 
+class ContractZoneSerializerBase(serializers.ModelSerializer):
+    class Meta:
+        model = ContractZone
+        fields = ('id', 'name')
+
+
+class ContractZoneSerializerGeoQueryView(ContractZoneSerializerBase):
+    unavailable_dates = serializers.ReadOnlyField(source='get_unavailable_dates')
+
+    class Meta(ContractZoneSerializerBase.Meta):
+        fields = ContractZoneSerializerBase.Meta.fields + ('unavailable_dates',)
+
+
 class GeoQueryViewSet(viewsets.ViewSet):
     def list(self, request, format=None):
         param_serializer = GeoQueryParamSerializer(data=request.query_params)
@@ -152,10 +165,12 @@ class GeoQueryViewSet(viewsets.ViewSet):
             geometry__boundary__covers=point,
         ).first()
         address = self.get_closest_address(point)
+        contract_zone = ContractZone.objects.filter(boundary__covers=point).first()
 
         data = {
             'neighborhood': NeigborhoodSerializer(neighborhood).data if neighborhood else None,
             'closest_address': AddressSerializer(address).data if address else None,
+            'contract_zone': ContractZoneSerializerGeoQueryView(contract_zone).data if contract_zone else None,
         }
 
         return Response(data)
@@ -165,11 +180,7 @@ class GeoQueryViewSet(viewsets.ViewSet):
         return Address.objects.annotate(distance=Distance('location', point)).order_by('distance').first()
 
 
-class ContractZoneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ContractZone
-        fields = ('id', 'name')
-
+class ContractZoneSerializer(ContractZoneSerializerBase):
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
