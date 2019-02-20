@@ -173,18 +173,42 @@ class ContractZoneSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
-        if all((
-            'request' in self.context,
-            can_view_contract_zone_details(self.context['request'].user),
-            hasattr(instance, 'event_count'),
-            hasattr(instance, 'estimated_attendee_count'),
-        )):
+        if 'request' in self.context and can_view_contract_zone_details(self.context['request'].user):
             data.update(
-                event_count=instance.event_count or 0,
-                estimated_attendee_count=instance.estimated_attendee_count or 0,
+                contact_person=self._get_contact_person_display(instance),
+                email=self._get_email_display(instance),
+                phone=instance.phone,
             )
+            if hasattr(instance, 'event_count') and hasattr(instance, 'estimated_attendee_count'):
+                data.update(
+                    event_count=instance.event_count or 0,
+                    estimated_attendee_count=instance.estimated_attendee_count or 0,
+                )
 
         return data
+
+    @classmethod
+    def _get_contact_person_display(cls, contract_zone):
+        if contract_zone.contact_person:
+            return contract_zone.contact_person
+        contractor = cls._get_contact_user(contract_zone)
+        if contractor:
+            return '{} {}'.format(contractor.first_name, contractor.last_name).strip()
+        return ''
+
+    @classmethod
+    def _get_email_display(cls, contract_zone):
+        if contract_zone.email:
+            return contract_zone.email
+        contractor = cls._get_contact_user(contract_zone)
+        if contractor:
+            return contractor.email
+        return ''
+
+    @classmethod
+    def _get_contact_user(cls, contract_zone):
+        # TODO this should be enhanced once specs of contacts and contractors are clear
+        return contract_zone.contractors.first()
 
 
 class ContractZoneFilter(filters.FilterSet):
@@ -202,6 +226,6 @@ class ContractZoneFilter(filters.FilterSet):
 
 
 class ContractZoneViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ContractZone.objects.all()
+    queryset = ContractZone.objects.all().prefetch_related('contractors')
     serializer_class = ContractZoneSerializer
     filterset_class = ContractZoneFilter
