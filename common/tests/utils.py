@@ -34,3 +34,9 @@ def check_translated_field_data_matches_object(data, obj, field_name):
             assert data[field_name][translation.language_code] == translation.name
     else:
         assert data[field_name] is None
+
+
+def assert_objects_in_results(objects, results):
+    object_ids = [o.id for o in objects]
+    result_ids = [r['id'] for r in results]
+    assert object_ids == result_ids, 'Expected {} does not match results {}'.format(object_ids, result_ids)
