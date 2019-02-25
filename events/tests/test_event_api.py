@@ -1,10 +1,15 @@
 from datetime import datetime, time, timedelta
 
 from django.conf import settings
+from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.utils import timezone
 from rest_framework.reverse import reverse
 
-from common.tests.utils import delete, get, patch, post, put
+from areas.factories import ContractZoneFactory
+from common.tests.utils import (
+    assert_objects_in_results, delete, get, patch, post, put
+)
+from events.factories import EventFactory
 from events.models import Event
 
 LIST_URL = reverse('v1:event-list')
@@ -217,3 +222,23 @@ def test_new_event_start_must_be_sufficiently_many_calendar_days_in_future(user_
     EVENT_DATA['start_time'] = beginning_of_today + timedelta(days=full_days_needed+1)
     EVENT_DATA['end_time'] = EVENT_DATA['start_time'] + timedelta(hours=6)
     post(user_api_client, LIST_URL, EVENT_DATA, 201)
+
+
+def test_event_filtering_by_contract_zone(official_api_client, event_with_contract_zone):
+    contract_zone = event_with_contract_zone.contract_zone
+
+    another_contract_zone = ContractZoneFactory(boundary=MultiPolygon(
+        Polygon((
+            (14, 30),
+            (15, 30),
+            (15, 31),
+            (14, 31),
+            (14, 30),
+        ))
+    ))
+    event_in_another_contract_zone = EventFactory(location=Point(14.5, 30.5))
+    assert event_in_another_contract_zone.contract_zone == another_contract_zone
+
+    results = get(official_api_client, LIST_URL + '?contract_zone={}'.format(contract_zone.id))['results']
+
+    assert_objects_in_results([event_with_contract_zone], results)

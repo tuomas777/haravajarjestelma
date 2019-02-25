@@ -33,6 +33,7 @@ class EventSerializer(serializers.ModelSerializer):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    filterset_fields = ('contract_zone',)
 
     def get_queryset(self):
         return self.queryset.filter_for_user(self.request.user)
