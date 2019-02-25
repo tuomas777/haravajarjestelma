@@ -27,6 +27,7 @@ env = environ.Env(
     DATABASE_URL=(str, 'postgis://haravajarjestelma:haravajarjestelma@localhost/haravajarjestelma'),
     CACHE_URL=(str, 'locmemcache://'),
     EMAIL_URL=(str, 'consolemail://'),
+    DEFAULT_FROM_EMAIL=(str, ''),
     SENTRY_DSN=(str, ''),
     CORS_ORIGIN_WHITELIST=(list, []),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
@@ -63,6 +64,8 @@ DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 CACHES = {'default': env.cache()}
 vars().update(env.email_url())  # EMAIL_BACKEND etc.
+if env.str('DEFAULT_FROM_EMAIL'):
+    DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL')
 RAVEN_CONFIG = {'dsn': env.str('SENTRY_DSN'), 'release': version}
 
 MEDIA_ROOT = env('MEDIA_ROOT')
@@ -76,8 +79,6 @@ WSGI_APPLICATION = 'haravajarjestelma.wsgi.application'
 LANGUAGE_CODE = 'fi'
 LANGUAGES = (
     ('fi', _('Finnish')),
-    ('en', _('English')),
-    ('sv', _('Swedish'))
 )
 TIME_ZONE = 'Europe/Helsinki'
 USE_I18N = True
@@ -105,10 +106,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'munigeo',
     'django_filters',
+    'parler',
 
     'events',
     'users',
     'areas',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +146,12 @@ SITE_ID = 1
 AUTH_USER_MODEL = 'users.User'
 
 DEFAULT_SRID = 4326
+
+PARLER_LANGUAGES = {
+    SITE_ID: (
+        {'code': 'fi'},
+    )
+}
 
 EVENT_MINIMUM_DAYS_BEFORE_START = env('EVENT_MINIMUM_DAYS_BEFORE_START')
 EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE = env('EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE')
