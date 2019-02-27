@@ -1,8 +1,11 @@
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from areas.models import ContractZone
+
+ERROR_MSG_NO_CONTRACT_ZONE = _('Location must be inside a contract zone.')
 
 
 class EventQuerySet(models.QuerySet):
@@ -51,8 +54,7 @@ class Event(models.Model):
     equipment_information = models.TextField(verbose_name=_('additional equipment information'), blank=True)
 
     contract_zone = models.ForeignKey(
-        ContractZone, verbose_name=_('contract zone'), related_name='events', blank=True, null=True,
-        on_delete=models.SET_NULL
+        ContractZone, verbose_name=_('contract zone'), related_name='events', on_delete=models.PROTECT
     )
 
     objects = EventQuerySet.as_manager()
@@ -65,6 +67,8 @@ class Event(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        self.contract_zone = ContractZone.objects.filter(boundary__covers=self.location).first()
-        super().save(*args, **kwargs)
+    def clean(self):
+        contract_zone = ContractZone.objects.get_by_location(self.location)
+        if not contract_zone:
+            raise ValidationError({'location': ERROR_MSG_NO_CONTRACT_ZONE}, code='no_contract_zone')
+        self.contract_zone = contract_zone

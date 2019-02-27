@@ -5,6 +5,8 @@ from django.contrib.gis.geos import Point
 from django.utils import timezone
 from factory.random import randgen
 
+from areas.models import ContractZone
+
 from .models import Event
 
 
@@ -27,6 +29,7 @@ class EventFactory(factory.django.DjangoModelFactory):
     trash_bag_count = factory.fuzzy.FuzzyInteger(1, 500)
     trash_picker_count = factory.fuzzy.FuzzyInteger(1, 50)
     equipment_information = factory.Faker('text')
+    contract_zone = factory.LazyAttribute(lambda e: ContractZone.objects.get_by_location(e.location))
 
     class Meta:
         model = Event

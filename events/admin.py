@@ -10,3 +10,4 @@ class EventAdmin(OSMGeoAdmin):
     default_lat = 8438120
     default_zoom = 10
     list_display = ('name', 'start_time', 'end_time')
+    readonly_fields = ('contract_zone',)
