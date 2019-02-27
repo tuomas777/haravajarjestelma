@@ -1,4 +1,6 @@
+import pytest
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
+from django.core.exceptions import ValidationError
 
 from areas.factories import ContractZoneFactory
 from events.factories import EventFactory
@@ -16,16 +18,11 @@ def test_contract_zone_autopopulating():
     point_outside_all_zones = Point(10, 10)
     point_inside_zone_2 = Point(25.5, 60.5)
 
-    new_event = EventFactory(location=point_outside_all_zones)
-    updated_event = EventFactory()
-    updated_event.location = point_outside_all_zones
-    updated_event.save()
-    assert new_event.contract_zone is None
-    assert updated_event.contract_zone is None
+    new_event = EventFactory.build(location=point_outside_all_zones)
+    with pytest.raises(ValidationError):
+        new_event.clean()
 
-    new_event = EventFactory(location=point_inside_zone_2)
-    updated_event = EventFactory()
-    updated_event.location = point_inside_zone_2
-    updated_event.save()
+    new_event = EventFactory.build(location=point_inside_zone_2)
+    new_event.clean()
+    new_event.save()
     assert new_event.contract_zone == zone_2
-    assert updated_event.contract_zone == zone_2

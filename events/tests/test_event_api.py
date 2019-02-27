@@ -89,7 +89,7 @@ def check_received_event_data(event_data, event_obj):
     assert event_data['created_at']
     assert event_data['modified_at']
     assert len(event_data['location']['coordinates']) == 2
-    assert not event_data['contract_zone']
+    assert event_data['contract_zone']
 
 
 def check_event_object(event_obj, event_data):
@@ -133,7 +133,7 @@ def test_official_get_detail_check_data(api_client, official, event):
     check_received_event_data(data, event)
 
 
-def test_unauthenticated_user_post_new_event(user_api_client):
+def test_unauthenticated_user_post_new_event(user_api_client, contract_zone):
     post(user_api_client, LIST_URL, EVENT_DATA)
 
     assert Event.objects.count() == 1
@@ -162,33 +162,33 @@ def test_official_patch_event(official_api_client, event):
     assert updated_event.state == 'approved'
 
 
-def test_unauthenticated_user_cannot_modify_or_delete_event(user_api_client, event_with_contract_zone):
-    url = get_detail_url(event_with_contract_zone)
+def test_unauthenticated_user_cannot_modify_or_delete_event(user_api_client, event):
+    url = get_detail_url(event)
 
     put(user_api_client, url, EVENT_DATA, 404)
     patch(user_api_client, url, EVENT_DATA, 404)
     delete(user_api_client, url, 404)
 
 
-def test_contractor_cannot_modify_or_delete_other_than_own_event(contractor_api_client, event_with_contract_zone):
-    url = get_detail_url(event_with_contract_zone)
+def test_contractor_cannot_modify_or_delete_other_than_own_event(contractor_api_client, event):
+    url = get_detail_url(event)
 
     put(contractor_api_client, url, EVENT_DATA, 404)
     patch(contractor_api_client, url, EVENT_DATA, 404)
     delete(contractor_api_client, url, 404)
 
 
-def test_contractor_can_modify_and_delete_own_event(contractor_api_client, event_with_contract_zone):
-    contractor_api_client.user.contract_zones.add(event_with_contract_zone.contract_zone)
-    url = get_detail_url(event_with_contract_zone)
+def test_contractor_can_modify_and_delete_own_event(contractor_api_client, event):
+    contractor_api_client.user.contract_zones.add(event.contract_zone)
+    url = get_detail_url(event)
 
     put(contractor_api_client, url, EVENT_DATA)
     patch(contractor_api_client, url, EVENT_DATA)
     delete(contractor_api_client, url)
 
 
-def test_official_can_modify_and_delete_event(official_api_client, event_with_contract_zone):
-    url = get_detail_url(event_with_contract_zone)
+def test_official_can_modify_and_delete_event(official_api_client, event):
+    url = get_detail_url(event)
 
     put(official_api_client, url, EVENT_DATA)
     patch(official_api_client, url, EVENT_DATA)
@@ -203,7 +203,7 @@ def test_event_must_start_before_ending(user_api_client):
     assert('Event must start before ending' in ret['non_field_errors'][0])
 
 
-def test_new_event_start_must_be_sufficiently_many_calendar_days_in_future(user_api_client):
+def test_new_event_start_must_be_sufficiently_many_calendar_days_in_future(user_api_client, contract_zone):
     full_days_needed = settings.EVENT_MINIMUM_DAYS_BEFORE_START
     now = timezone.now()
     beginning_of_today = datetime.combine(now.date(), time(tzinfo=now.tzinfo))

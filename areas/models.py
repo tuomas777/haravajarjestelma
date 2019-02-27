@@ -16,12 +16,19 @@ SUNDAY = 7
 HOLIDAYS_FINLAND = holidays.Finland()
 
 
+class ContractZoneQuerySet(models.QuerySet):
+    def get_by_location(self, location):
+        return self.filter(boundary__covers=location).first()
+
+
 class ContractZone(models.Model):
     name = models.CharField(verbose_name=_('name'), max_length=255)
     boundary = models.MultiPolygonField(verbose_name=_('boundary'), srid=PROJECTION_SRID)
     contact_person = models.CharField(verbose_name=_('contact person'), max_length=255, blank=True)
     email = models.EmailField(verbose_name=_('email'), blank=True)
     phone = models.CharField(verbose_name=_('phone'), max_length=255, blank=True)
+
+    objects = ContractZoneQuerySet.as_manager()
 
     class Meta:
         verbose_name = _('contract zone')
