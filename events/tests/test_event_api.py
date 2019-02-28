@@ -1,5 +1,6 @@
 from datetime import datetime, time, timedelta
 
+import pytest
 from django.conf import settings
 from django.utils import timezone
 from django.utils.timezone import localtime
@@ -117,6 +118,26 @@ def test_unauthenticated_user_get_detail_404(event, api_client):
     get(api_client, get_detail_url(event), 404)
 
 
+@pytest.mark.parametrize('is_zones_contractor', (True, False))
+def test_contractor_get_list_check_only_own_received(contractor_api_client, event, is_zones_contractor):
+    if is_zones_contractor:
+        event.contract_zone.contractor = contractor_api_client.user
+        event.contract_zone.save(update_fields=('contractor',))
+
+    results = get(contractor_api_client, LIST_URL)['results']
+
+    assert len(results) == (1 if is_zones_contractor else 0)
+
+
+@pytest.mark.parametrize('is_zones_contractor', (True, False))
+def test_contractor_get_detail_check_only_own_received(contractor_api_client, event, is_zones_contractor):
+    if is_zones_contractor:
+        event.contract_zone.contractor = contractor_api_client.user
+        event.contract_zone.save(update_fields=('contractor',))
+
+    get(contractor_api_client, get_detail_url(event), 200 if is_zones_contractor else 404)
+
+
 def test_official_get_list_check_data(api_client, official, event):
     api_client.force_authenticate(user=official)
 
@@ -180,7 +201,8 @@ def test_contractor_cannot_modify_or_delete_other_than_own_event(contractor_api_
 
 
 def test_contractor_can_modify_and_delete_own_event(contractor_api_client, event):
-    contractor_api_client.user.contract_zones.add(event.contract_zone)
+    event.contract_zone.contractor = contractor_api_client.user
+    event.contract_zone.save(update_fields=('contractor',))
     url = get_detail_url(event)
 
     put(contractor_api_client, url, EVENT_DATA)

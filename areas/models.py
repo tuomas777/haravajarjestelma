@@ -27,6 +27,9 @@ class ContractZone(models.Model):
     contact_person = models.CharField(verbose_name=_('contact person'), max_length=255, blank=True)
     email = models.EmailField(verbose_name=_('email'), blank=True)
     phone = models.CharField(verbose_name=_('phone'), max_length=255, blank=True)
+    contractor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_('contractor'), null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     objects = ContractZoneQuerySet.as_manager()
 
