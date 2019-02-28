@@ -2,6 +2,7 @@ from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.utils import timezone
+from django.utils.timezone import localtime
 from rest_framework.reverse import reverse
 
 from common.tests.utils import delete, get, patch, post, put
@@ -205,7 +206,7 @@ def test_event_must_start_before_ending(user_api_client):
 
 def test_new_event_start_must_be_sufficiently_many_calendar_days_in_future(user_api_client, contract_zone):
     full_days_needed = settings.EVENT_MINIMUM_DAYS_BEFORE_START
-    now = timezone.now()
+    now = localtime(timezone.now())
     beginning_of_today = datetime.combine(now.date(), time(tzinfo=now.tzinfo))
 
     # "worst case": event submitted at 00:00, start is the last disallowed minute (at 23:59, full_days_needed later)
