@@ -11,10 +11,11 @@ from rest_framework import mixins, serializers, viewsets
 from rest_framework.response import Response
 
 from areas.models import ContractZone
+from common.api import UTCModelSerializer
 from users.models import can_view_contract_zone_details
 
 
-class TranslatedModelSerializer(TranslatableModelSerializer):
+class TranslatedModelSerializer(TranslatableModelSerializer, UTCModelSerializer):
     translations = TranslatedFieldsField()
 
     def to_representation(self, obj):
@@ -131,7 +132,7 @@ class StreetSerializer(TranslatedModelSerializer):
         fields = ('name', 'translations')
 
 
-class AddressSerializer(serializers.ModelSerializer):
+class AddressSerializer(UTCModelSerializer):
     street = StreetSerializer()
     distance = serializers.FloatField(source='distance.m')
 
@@ -140,7 +141,7 @@ class AddressSerializer(serializers.ModelSerializer):
         exclude = ('id', 'modified_at')
 
 
-class ContractZoneSerializerBase(serializers.ModelSerializer):
+class ContractZoneSerializerBase(UTCModelSerializer):
     class Meta:
         model = ContractZone
         fields = ('id', 'name')
