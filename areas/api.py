@@ -93,6 +93,7 @@ class NeigborhoodSerializer(AdministrativeDivisionSerializer):
 
         # when we are dealing with a single neighborhood, we can skip some unnecessary work by fetching only
         # its sub districts instead of all districts
+
         try:
             int_origin_id = int(self.instance.origin_id)
         except ValueError:
