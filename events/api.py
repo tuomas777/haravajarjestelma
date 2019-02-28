@@ -3,10 +3,11 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, viewsets
 
 from areas.models import ContractZone, date_range
+from common.api import UTCModelSerializer
 from events.models import ERROR_MSG_NO_CONTRACT_ZONE, Event
 
 
-class EventSerializer(serializers.ModelSerializer):
+class EventSerializer(UTCModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'

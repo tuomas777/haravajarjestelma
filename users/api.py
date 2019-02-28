@@ -1,12 +1,14 @@
 from django.contrib.auth import get_user_model
-from rest_framework import mixins, serializers, viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
+
+from common.api import UTCModelSerializer
 
 User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(UTCModelSerializer):
     class Meta:
         model = User
         fields = ('uuid', 'first_name', 'last_name', 'is_official', 'is_contractor')
