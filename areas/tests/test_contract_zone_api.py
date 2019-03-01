@@ -86,7 +86,8 @@ def test_get_list_official_check_contact_data(contract_zone, official_api_client
                                               has_contractor):
     if has_contractor:
         user = UserFactory()
-        user.contract_zones.add(contract_zone)
+        contract_zone.contractor = user
+        contract_zone.save(update_fields=('contractor',))
     if not contact_fields_populated:
         contract_zone.contact_person = contract_zone.email = ''
         contract_zone.save(update_fields=('contact_person', 'email'))
