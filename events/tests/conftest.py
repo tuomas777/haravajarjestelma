@@ -9,13 +9,8 @@ from ..factories import EventFactory
 
 
 @pytest.fixture
-def event():
-    return EventFactory()
-
-
-@pytest.fixture
-def event_with_contract_zone():
-    contract_zone = ContractZoneFactory(boundary=MultiPolygon(
+def contract_zone():
+    return ContractZoneFactory(boundary=MultiPolygon(
         Polygon((
             (24, 60),
             (25, 60),
@@ -24,6 +19,10 @@ def event_with_contract_zone():
             (24, 60),
         ))
     ))
+
+
+@pytest.fixture
+def event(contract_zone):
     event = EventFactory(location=Point(24.5, 60.5))
     assert event.contract_zone == contract_zone
     return event
