@@ -1,8 +1,11 @@
 from collections import defaultdict
 
+from django.conf import settings
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.db.models import Count, Q, Sum
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters import rest_framework as filters
 from munigeo.models import Address, AdministrativeDivision, Street
 from parler_rest.fields import TranslatedFieldsField
@@ -90,6 +93,7 @@ class NeigborhoodSerializer(AdministrativeDivisionSerializer):
 
         # when we are dealing with a single neighborhood, we can skip some unnecessary work by fetching only
         # its sub districts instead of all districts
+
         try:
             int_origin_id = int(self.instance.origin_id)
         except ValueError:
@@ -119,6 +123,10 @@ class NeighborhoodViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         'origin_id'
     )
     serializer_class = NeigborhoodSerializer
+
+    @method_decorator(cache_page(settings.CACHES['default'].get('TIMEOUT', 60 * 60)))
+    def list(self, *args, **kwargs):
+        return super().list(*args, **kwargs)
 
 
 class GeoQueryParamSerializer(serializers.Serializer):
