@@ -18,8 +18,9 @@ def set_frozen_time():
 
 
 @pytest.fixture(autouse=True)
-def force_english(settings):
+def force_settings(settings):
     settings.LANGUAGE_CODE = 'en'
+    settings.EVENT_MINIMUM_DAYS_BEFORE_START = 7
 
 
 @pytest.fixture(autouse=True)
