@@ -26,8 +26,11 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     DATABASE_URL=(str, 'postgis://haravajarjestelma:haravajarjestelma@localhost/haravajarjestelma'),
     CACHE_URL=(str, 'locmemcache://'),
-    EMAIL_URL=(str, 'consolemail://'),
     DEFAULT_FROM_EMAIL=(str, ''),
+    MAILER_EMAIL_BACKEND=(str, 'django.core.mail.backends.console.EmailBackend'),
+    MAIL_MAILGUN_KEY=(str, ''),
+    MAIL_MAILGUN_DOMAIN=(str, ''),
+    MAIL_MAILGUN_API=(str, ''),
     SENTRY_DSN=(str, ''),
     CORS_ORIGIN_WHITELIST=(list, []),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
@@ -63,9 +66,18 @@ DATABASES = {'default': env.db()}
 DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 CACHES = {'default': env.cache()}
-vars().update(env.email_url())  # EMAIL_BACKEND etc.
+
 if env.str('DEFAULT_FROM_EMAIL'):
     DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL')
+if env('MAIL_MAILGUN_KEY'):
+    ANYMAIL = {
+        'MAILGUN_API_KEY': env('MAIL_MAILGUN_KEY'),
+        'MAILGUN_SENDER_DOMAIN': env('MAIL_MAILGUN_DOMAIN'),
+        'MAILGUN_API_URL': env('MAIL_MAILGUN_API'),
+    }
+EMAIL_BACKEND = "mailer.backend.DbBackend"
+MAILER_EMAIL_BACKEND = env.str('MAILER_EMAIL_BACKEND')
+
 RAVEN_CONFIG = {'dsn': env.str('SENTRY_DSN'), 'release': version}
 
 MEDIA_ROOT = env('MEDIA_ROOT')
@@ -107,6 +119,8 @@ INSTALLED_APPS = [
     'munigeo',
     'django_filters',
     'parler',
+    'anymail',
+    'mailer',
 
     'events',
     'users',

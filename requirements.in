@@ -13,3 +13,5 @@ django-filter
 holidays
 django-enumfields
 jinja2
+django-anymail
+django-mailer
