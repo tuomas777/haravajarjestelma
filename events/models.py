@@ -72,3 +72,6 @@ class Event(models.Model):
         if not contract_zone:
             raise ValidationError({'location': ERROR_MSG_NO_CONTRACT_ZONE}, code='no_contract_zone')
         self.contract_zone = contract_zone
+
+    def get_notification_context(self):
+        return {'event': self}

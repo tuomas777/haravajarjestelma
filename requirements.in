@@ -7,6 +7,11 @@ django-cors-headers
 django-helusers
 djangorestframework-gis
 django-munigeo
+django-parler
 django-parler-rest
 django-filter
 holidays
+django-enumfields
+jinja2
+django-anymail
+django-mailer

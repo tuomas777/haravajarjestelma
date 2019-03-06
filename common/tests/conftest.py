@@ -1,5 +1,6 @@
 import factory.random
 import pytest
+from django.utils.translation import ugettext_lazy as _
 from freezegun import freeze_time
 from rest_framework.test import APIClient
 
@@ -19,8 +20,13 @@ def set_frozen_time():
 
 @pytest.fixture(autouse=True)
 def force_settings(settings):
-    settings.LANGUAGE_CODE = 'en'
+    settings.LANGUAGE_CODE = 'fi'
+    settings.LANGUAGES = (
+        ('fi', _('Finnish')),
+    )
     settings.EVENT_MINIMUM_DAYS_BEFORE_START = 7
+    settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+    settings.DEFAULT_FROM_EMAIL = 'noreply@foo.bar'
 
 
 @pytest.fixture(autouse=True)

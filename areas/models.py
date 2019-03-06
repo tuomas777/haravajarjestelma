@@ -66,6 +66,13 @@ class ContractZone(models.Model):
 
         return list(sorted(too_early_dates | too_many_events_dates))
 
+    def get_contact_email(self):
+        if self.email:
+            return self.email
+        if self.contractor:
+            return self.contractor.email
+        return None
+
 
 def get_affected_dates(date):
     """
