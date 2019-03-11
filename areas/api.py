@@ -152,7 +152,7 @@ class AddressSerializer(UTCModelSerializer):
 class ContractZoneSerializerBase(UTCModelSerializer):
     class Meta:
         model = ContractZone
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'active')
 
 
 class ContractZoneSerializerGeoQueryView(ContractZoneSerializerBase):
@@ -211,18 +211,18 @@ class ContractZoneSerializer(ContractZoneSerializerBase):
     def _get_contact_person_display(cls, contract_zone):
         if contract_zone.contact_person:
             return contract_zone.contact_person
-        contractor = contract_zone.contractor
-        if contractor:
-            return '{} {}'.format(contractor.first_name, contractor.last_name).strip()
+        user = contract_zone.contractor_user
+        if user:
+            return '{} {}'.format(user.first_name, user.last_name).strip()
         return ''
 
     @classmethod
     def _get_email_display(cls, contract_zone):
         if contract_zone.email:
             return contract_zone.email
-        contractor = contract_zone.contractor
-        if contractor:
-            return contractor.email
+        user = contract_zone.contractor_user
+        if user:
+            return user.email
         return ''
 
 
@@ -241,6 +241,6 @@ class ContractZoneFilter(filters.FilterSet):
 
 
 class ContractZoneViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ContractZone.objects.all().select_related('contractor')
+    queryset = ContractZone.objects.all().select_related('contractor_user')
     serializer_class = ContractZoneSerializer
     filterset_class = ContractZoneFilter

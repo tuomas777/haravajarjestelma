@@ -19,8 +19,8 @@ def notification_template_event_created():
 
 
 def test_event_created_notification_is_sent_to_contractor(contract_zone, user, notification_template_event_created):
-    contract_zone.contractor = user
-    contract_zone.save(update_fields=('contractor',))
+    contract_zone.contractor_user = user
+    contract_zone.save(update_fields=('contractor_user',))
 
     event = EventFactory()
 
@@ -30,7 +30,7 @@ def test_event_created_notification_is_sent_to_contractor(contract_zone, user, n
 
 def test_event_created_notification_is_not_sent_to_other_contractor(contract_zone, user,
                                                                     notification_template_event_created):
-    assert contract_zone.contractor != user
+    assert contract_zone.contractor_user != user
 
     EventFactory()
 
@@ -39,8 +39,8 @@ def test_event_created_notification_is_not_sent_to_other_contractor(contract_zon
 
 def test_notification_is_not_sent_when_event_modified_or_deleted(contract_zone, user,
                                                                  notification_template_event_created):
-    contract_zone.contractor = user
-    contract_zone.save(update_fields=('contractor',))
+    contract_zone.contractor_user = user
+    contract_zone.save(update_fields=('contractor_user',))
     event = EventFactory()
     mail.outbox = []
 

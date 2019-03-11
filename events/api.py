@@ -23,7 +23,7 @@ class EventSerializer(UTCModelSerializer):
 
         location = data.get('location')
         if location:
-            data['contract_zone'] = ContractZone.objects.get_by_location(location)
+            data['contract_zone'] = ContractZone.objects.get_active_by_location(location)
             if not data['contract_zone']:
                 raise serializers.ValidationError({'location': ERROR_MSG_NO_CONTRACT_ZONE})
 

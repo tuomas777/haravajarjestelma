@@ -135,9 +135,10 @@ def test_no_matching_contract_zone(api_client, contract_zone):
 def test_contract_zone_check_data(api_client, contract_zone):
     response_data = get(api_client, get_url(60, 24))
     contract_zone_data = response_data['contract_zone']
-    assert contract_zone_data.keys() == {'id', 'name', 'unavailable_dates'}
+    assert contract_zone_data.keys() == {'id', 'name', 'active', 'unavailable_dates'}
     assert contract_zone_data['id'] == contract_zone.id
     assert contract_zone_data['name'] == contract_zone.name
+    assert contract_zone_data['active'] == contract_zone.active
     assert contract_zone_data['unavailable_dates']
 
 
