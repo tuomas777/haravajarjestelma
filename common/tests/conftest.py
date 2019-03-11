@@ -20,7 +20,7 @@ def set_frozen_time():
 
 @pytest.fixture(autouse=True)
 def force_settings(settings):
-    settings.LANGUAGE_CODE = 'fi'
+    settings.LANGUAGE_CODE = 'en'
     settings.LANGUAGES = (
         ('fi', _('Finnish')),
     )
