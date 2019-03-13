@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-10 21:18+0000\n"
+"POT-Creation-Date: 2019-03-11 22:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,17 +18,59 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "Imported fields"
+msgstr "Importoidut kentät"
+
+msgid "Areas"
+msgstr "Alueet"
+
+msgid "origin ID"
+msgstr "alkuperäinen ID"
+
 msgid "name"
 msgstr "nimi"
 
 msgid "boundary"
 msgstr "raja"
 
+msgid "contact person"
+msgstr "kontaktihenkilö"
+
+msgid "email"
+msgstr "sähköposti"
+
+msgid "phone"
+msgstr "puhelinnumero"
+
+msgid "contractor"
+msgstr "urakoitsija"
+
+msgid "contractor user"
+msgstr "urakoitsijan käyttäjä"
+
+msgid "active"
+msgstr "voimassa"
+
 msgid "contract zone"
-msgstr "talkoopiiri"
+msgstr "urakka-alue"
 
 msgid "contract zones"
-msgstr "talkoopiirit"
+msgstr "urakka-alueet"
+
+msgid "Finnish"
+msgstr "suomi"
+
+msgid "Event must start before ending."
+msgstr "Tapahtuman alkuajan täytyy olla ennen sen loppuaikaa."
+
+msgid "Unavailable dates: {}"
+msgstr "Ei saatavilla olevat päivämäärät: {}"
+
+msgid "Events"
+msgstr "Tapahtumat"
+
+msgid "Location must be inside a contract zone."
+msgstr "Sijainnin täytyy olla urakka-alueen sisällä."
 
 msgid "waiting for approval"
 msgstr "odottaa hyväksyntää"
@@ -90,23 +132,46 @@ msgstr "jätepihtejä"
 msgid "has a roll-off dumpster"
 msgstr "siirtolava"
 
+msgid "additional equipment information"
+msgstr "varusteiden lisätiedot"
+
 msgid "event"
 msgstr "tapahtuma"
 
 msgid "events"
 msgstr "tapahtumat"
 
-msgid "Finnish"
-msgstr "suomi"
+msgid "Notifications"
+msgstr "Herätteet"
 
-msgid "English"
-msgstr "englanti"
+msgid "Event created"
+msgstr "Tapahtuma luotu"
 
-msgid "Swedish"
-msgstr "ruotsi"
+msgid "type"
+msgstr "tyyppi"
+
+msgid "subject"
+msgstr "otsikko"
+
+msgid "body, HTML version"
+msgstr "sisältö, HTML-versio"
+
+msgid "body, plain text version"
+msgstr "sisältö, tekstiversio"
+
+msgid "If left blank, the HTML version without HTML tags will be used."
+msgstr ""
+"Mikäli tätä ei täytetä, käytetään tekstiversiona HTML-versiota, josta on "
+"poistettu HTML tagit."
+
+msgid "notification"
+msgstr "heräte"
+
+msgid "notifications"
+msgstr "herätteet"
+
+msgid "Users"
+msgstr "Käyttäjät"
 
 msgid "official"
 msgstr "virkailija"
-
-msgid "contractor"
-msgstr "alihankkija"

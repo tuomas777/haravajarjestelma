@@ -44,6 +44,7 @@ def get_expected_base_data(contract_zone):
     return {
         'id': contract_zone.id,
         'name': contract_zone.name,
+        'active': contract_zone.active,
     }
 
 
@@ -86,8 +87,8 @@ def test_get_list_official_check_contact_data(contract_zone, official_api_client
                                               has_contractor):
     if has_contractor:
         user = UserFactory()
-        contract_zone.contractor = user
-        contract_zone.save(update_fields=('contractor',))
+        contract_zone.contractor_user = user
+        contract_zone.save(update_fields=('contractor_user',))
     if not contact_fields_populated:
         contract_zone.contact_person = contract_zone.email = ''
         contract_zone.save(update_fields=('contact_person', 'email'))

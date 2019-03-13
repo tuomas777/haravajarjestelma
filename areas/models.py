@@ -20,17 +20,23 @@ class ContractZoneQuerySet(models.QuerySet):
     def get_by_location(self, location):
         return self.filter(boundary__covers=location).first()
 
+    def get_active_by_location(self, location):
+        return self.filter(boundary__covers=location, active=True).first()
+
 
 class ContractZone(models.Model):
+    origin_id = models.CharField(verbose_name=_('origin ID'), max_length=50, unique=True)
     name = models.CharField(verbose_name=_('name'), max_length=255)
     boundary = models.MultiPolygonField(verbose_name=_('boundary'), srid=PROJECTION_SRID)
     contact_person = models.CharField(verbose_name=_('contact person'), max_length=255, blank=True)
     email = models.EmailField(verbose_name=_('email'), blank=True)
     phone = models.CharField(verbose_name=_('phone'), max_length=255, blank=True)
-    contractor = models.ForeignKey(
-        settings.AUTH_USER_MODEL, verbose_name=_('contractor'), related_name='contract_zones', null=True, blank=True,
-        on_delete=models.SET_NULL
+    contractor = models.CharField(verbose_name=_('contractor'), max_length=255, blank=True)
+    contractor_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=_('contractor user'), related_name='contract_zones', null=True,
+        blank=True, on_delete=models.SET_NULL
     )
+    active = models.BooleanField(verbose_name=_('active'), default=True)
 
     objects = ContractZoneQuerySet.as_manager()
 
@@ -69,8 +75,8 @@ class ContractZone(models.Model):
     def get_contact_email(self):
         if self.email:
             return self.email
-        if self.contractor:
-            return self.contractor.email
+        if self.contractor_user:
+            return self.contractor_user.email
         return None
 
 

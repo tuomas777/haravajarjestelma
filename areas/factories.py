@@ -23,6 +23,7 @@ class ContractZoneFactory(factory.django.DjangoModelFactory):
             ))
         )
     )
+    origin_id = factory.Sequence(lambda n: n)
 
     class Meta:
         model = ContractZone

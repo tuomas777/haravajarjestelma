@@ -123,24 +123,24 @@ def test_unauthenticated_user_get_detail_404(event, api_client):
     get(api_client, get_detail_url(event), 404)
 
 
-@pytest.mark.parametrize('is_zones_contractor', (True, False))
-def test_contractor_get_list_check_only_own_received(contractor_api_client, event, is_zones_contractor):
-    if is_zones_contractor:
-        event.contract_zone.contractor = contractor_api_client.user
-        event.contract_zone.save(update_fields=('contractor',))
+@pytest.mark.parametrize('is_zones_contractor_user', (True, False))
+def test_contractor_get_list_check_only_own_received(contractor_api_client, event, is_zones_contractor_user):
+    if is_zones_contractor_user:
+        event.contract_zone.contractor_user = contractor_api_client.user
+        event.contract_zone.save(update_fields=('contractor_user',))
 
     results = get(contractor_api_client, LIST_URL)['results']
 
-    assert len(results) == (1 if is_zones_contractor else 0)
+    assert len(results) == (1 if is_zones_contractor_user else 0)
 
 
-@pytest.mark.parametrize('is_zones_contractor', (True, False))
-def test_contractor_get_detail_check_only_own_received(contractor_api_client, event, is_zones_contractor):
-    if is_zones_contractor:
-        event.contract_zone.contractor = contractor_api_client.user
-        event.contract_zone.save(update_fields=('contractor',))
+@pytest.mark.parametrize('is_zones_contractor_user', (True, False))
+def test_contractor_get_detail_check_only_own_received(contractor_api_client, event, is_zones_contractor_user):
+    if is_zones_contractor_user:
+        event.contract_zone.contractor_user = contractor_api_client.user
+        event.contract_zone.save(update_fields=('contractor_user',))
 
-    get(contractor_api_client, get_detail_url(event), 200 if is_zones_contractor else 404)
+    get(contractor_api_client, get_detail_url(event), 200 if is_zones_contractor_user else 404)
 
 
 def test_official_get_list_check_data(api_client, official, event):
@@ -206,8 +206,8 @@ def test_contractor_cannot_modify_or_delete_other_than_own_event(contractor_api_
 
 
 def test_contractor_can_modify_and_delete_own_event(contractor_api_client, event):
-    event.contract_zone.contractor = contractor_api_client.user
-    event.contract_zone.save(update_fields=('contractor',))
+    event.contract_zone.contractor_user = contractor_api_client.user
+    event.contract_zone.save(update_fields=('contractor_user',))
     url = get_detail_url(event)
 
     put(contractor_api_client, url, EVENT_DATA)
