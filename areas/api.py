@@ -15,6 +15,7 @@ from rest_framework.response import Response
 
 from areas.models import ContractZone
 from common.api import UTCModelSerializer
+from events.models import Event
 from users.models import can_view_contract_zone_details
 
 
@@ -231,10 +232,10 @@ class ContractZoneFilter(filters.FilterSet):
 
     def filter_stats(self, queryset, name, value):
         if can_view_contract_zone_details(self.request.user):
-            year_filter = Q(events__start_time__date__year=value)
+            filtering = Q(events__start_time__date__year=value, events__state=Event.APPROVED)
             queryset = queryset.annotate(
-                event_count=Count('events', filter=year_filter),
-                estimated_attendee_count=Sum('events__estimated_attendee_count', filter=year_filter),
+                event_count=Count('events', filter=filtering),
+                estimated_attendee_count=Sum('events__estimated_attendee_count', filter=filtering),
             )
 
         return queryset

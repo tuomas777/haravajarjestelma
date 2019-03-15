@@ -7,6 +7,7 @@ from rest_framework.reverse import reverse
 
 from common.tests.utils import get
 from events.factories import EventFactory
+from events.models import Event
 from users.factories import UserFactory
 
 from ..factories import ContractZoneFactory
@@ -70,6 +71,13 @@ def test_get_list_official_no_filter_no_stats_check_contact_data(contract_zone, 
 
 
 def test_get_list_official_check_stats(contract_zone, two_events_2018, two_events_2019, official_api_client):
+    non_approved_event_that_should_be_ignored = EventFactory(
+        estimated_attendee_count=100000,
+        state=Event.WAITING_FOR_APPROVAL,
+    )
+    assert non_approved_event_that_should_be_ignored.contract_zone == contract_zone
+    assert non_approved_event_that_should_be_ignored.start_time.date().year == 2018
+
     response_data = get(official_api_client, LIST_URL + '?stats_year=2018')
 
     event_1, event_2 = two_events_2018
