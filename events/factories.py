@@ -11,6 +11,7 @@ from .models import Event
 
 
 class EventFactory(factory.django.DjangoModelFactory):
+    state = Event.APPROVED
     name = factory.Faker('bs')
     description = factory.Faker('text')
     start_time = factory.LazyFunction(lambda: timezone.now() + timedelta(days=8, hours=randgen.randint(1, 6)))

@@ -177,9 +177,10 @@ def test_official_put_event(official_api_client, event):
 
 
 def test_official_patch_event(official_api_client, event):
+    event.state = Event.WAITING_FOR_APPROVAL
+    event.save(update_fields=('state',))
     old_name = event.name
     assert old_name != EVENT_DATA['name']
-    assert event.state == 'waiting_for_approval'
 
     patch(official_api_client, get_detail_url(event), {'state': 'approved'})
 
