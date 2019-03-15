@@ -48,9 +48,9 @@ class Event(models.Model):
     maintenance_location = models.TextField(verbose_name=_('maintenance location'))
     additional_information = models.TextField(verbose_name=_('additional information'), blank=True)
 
-    trash_bag_count = models.PositiveIntegerField(verbose_name=_('trash bag count'))
+    small_trash_bag_count = models.PositiveIntegerField(verbose_name=_('small trash bag count'))
+    large_trash_bag_count = models.PositiveIntegerField(verbose_name=_('large trash bag count'))
     trash_picker_count = models.PositiveIntegerField(verbose_name=_('trash picker count'))
-    has_roll_off_dumpster = models.BooleanField(verbose_name=_('has a roll-off dumpster'), default=False)
     equipment_information = models.TextField(verbose_name=_('additional equipment information'), blank=True)
 
     contract_zone = models.ForeignKey(
