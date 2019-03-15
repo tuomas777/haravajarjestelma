@@ -177,7 +177,7 @@ msgid "official"
 msgstr "virkailija"
 
 msgid "user"
-msgstr ""
+msgstr "käyttäjä"
 
 msgid "users"
 msgstr "käyttäjät"
