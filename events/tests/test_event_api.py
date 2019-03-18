@@ -265,3 +265,12 @@ def test_event_filtering_by_contract_zone(official_api_client, event):
     results = get(official_api_client, LIST_URL + '?contract_zone={}'.format(contract_zone.id))['results']
 
     assert_objects_in_results([event], results)
+
+
+def test_event_cannot_be_created_in_approved_state(api_client, contract_zone):
+    EVENT_DATA['state'] = Event.APPROVED
+
+    post(api_client, LIST_URL, EVENT_DATA)
+
+    new_event = Event.objects.latest('id')
+    assert new_event.state == Event.WAITING_FOR_APPROVAL
