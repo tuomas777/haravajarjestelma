@@ -13,6 +13,12 @@ class EventSerializer(UTCModelSerializer):
         fields = '__all__'
         read_only_fields = ('contract_zone',)
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if not self.instance:
+            fields['state'].read_only = True
+        return fields
+
     def validate(self, data):
         start_time = data.get('start_time')
         end_time = data.get('end_time')
