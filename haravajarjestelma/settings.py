@@ -89,9 +89,11 @@ STATIC_URL = env.str('STATIC_URL')
 ROOT_URLCONF = 'haravajarjestelma.urls'
 WSGI_APPLICATION = 'haravajarjestelma.wsgi.application'
 
-LANGUAGE_CODE = 'fi'
+LANGUAGE_CODE = 'en'
 LANGUAGES = (
     ('fi', _('Finnish')),
+    ('sv', _('Swedish')),
+    ('en', _('English')),
 )
 TIME_ZONE = 'Europe/Helsinki'
 USE_I18N = True
@@ -132,6 +134,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
