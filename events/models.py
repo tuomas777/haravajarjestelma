@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from areas.models import ContractZone
+from events.signals import event_approved
 
 ERROR_MSG_NO_CONTRACT_ZONE = _('Location must be inside a contract zone.')
 
@@ -73,5 +74,14 @@ class Event(models.Model):
             raise ValidationError({'location': ERROR_MSG_NO_CONTRACT_ZONE}, code='no_contract_zone')
         self.contract_zone = contract_zone
 
-    def get_notification_context(self):
-        return {'event': self}
+    def save(self, *args, **kwargs):
+        if self.pk:
+            # this is not optimal as it causes an extra hit to the db, but event modifications are so
+            # infrequent that we don't bother to build more complex logic for this
+            old_state = Event.objects.get(pk=self.pk).state
+
+            super().save(*args, **kwargs)
+            if old_state == Event.WAITING_FOR_APPROVAL and self.state == Event.APPROVED:
+                event_approved.send(self.__class__, instance=self)
+        else:
+            super().save(*args, **kwargs)
