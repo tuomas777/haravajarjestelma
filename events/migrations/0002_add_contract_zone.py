@@ -6,15 +6,19 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('areas', '0001_initial'),
-        ('events', '0001_initial'),
-    ]
+    dependencies = [("areas", "0001_initial"), ("events", "0001_initial")]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='contract_zone',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='events', to='areas.ContractZone', verbose_name='contract zone'),
-        ),
+            model_name="event",
+            name="contract_zone",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="events",
+                to="areas.ContractZone",
+                verbose_name="contract zone",
+            ),
+        )
     ]

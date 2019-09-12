@@ -11,27 +11,35 @@ from mailer.engine import send_all
 from mailer.models import Message
 from parler.utils.context import switch_language
 
-from notifications.models import (
-    NotificationTemplate, NotificationTemplateException
-)
+from notifications.models import NotificationTemplate, NotificationTemplateException
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_LANGUAGE = settings.LANGUAGES[0][0]
 
-RenderedTemplate = namedtuple('RenderedTemplate', ('subject', 'body_html', 'body_text'))
+RenderedTemplate = namedtuple("RenderedTemplate", ("subject", "body_html", "body_text"))
 
 
-def send_notification(email, notification_type, context=None, language=DEFAULT_LANGUAGE):
-    logger.debug('Trying to send notification "{}" to {}.'.format(notification_type, email))
+def send_notification(
+    email, notification_type, context=None, language=DEFAULT_LANGUAGE
+):
+    logger.debug(
+        'Trying to send notification "{}" to {}.'.format(notification_type, email)
+    )
 
     if context is None:
         context = {}
 
     try:
-        subject, body_html, body_text = render_notification_template(notification_type, context, language)
+        subject, body_html, body_text = render_notification_template(
+            notification_type, context, language
+        )
     except NotificationTemplate.DoesNotExist:
-        logger.debug('NotificationTemplate "{}" does not exist, not sending anything.'.format(notification_type))
+        logger.debug(
+            'NotificationTemplate "{}" does not exist, not sending anything.'.format(
+                notification_type
+            )
+        )
         return
     except NotificationTemplateException as e:
         logger.error(e, exc_info=True)
@@ -39,7 +47,9 @@ def send_notification(email, notification_type, context=None, language=DEFAULT_L
 
     if not subject:
         logger.warning(
-            'Rendered notification "{}" has an empty subject, not sending anything.'.format(notification_type)
+            'Rendered notification "{}" has an empty subject, not sending anything.'.format(
+                notification_type
+            )
         )
         return
 
@@ -50,14 +60,18 @@ def send_notification(email, notification_type, context=None, language=DEFAULT_L
     send_all()
 
 
-def render_notification_template(notification_type, context, language_code=DEFAULT_LANGUAGE):
+def render_notification_template(
+    notification_type, context, language_code=DEFAULT_LANGUAGE
+):
     """
     Render a notification template with given context in given language
 
     Returns a namedtuple containing all content fields (subject, body_html, body_text) of the template.
     """
     template = NotificationTemplate.objects.get(type=notification_type)
-    env = SandboxedEnvironment(trim_blocks=True, lstrip_blocks=True, undefined=StrictUndefined)
+    env = SandboxedEnvironment(
+        trim_blocks=True, lstrip_blocks=True, undefined=StrictUndefined
+    )
 
     with switch_language(template, language_code):
         try:
@@ -77,4 +91,10 @@ def render_notification_template(notification_type, context, language_code=DEFAU
 
 def send_mail(subject, body_html, body_text, to_address):
     logger.info('Sending notification email to {}: "{}"'.format(to_address, subject))
-    django_send_mail(subject, body_text, settings.DEFAULT_FROM_EMAIL, [to_address], html_message=body_html)
+    django_send_mail(
+        subject,
+        body_text,
+        settings.DEFAULT_FROM_EMAIL,
+        [to_address],
+        html_message=body_html,
+    )

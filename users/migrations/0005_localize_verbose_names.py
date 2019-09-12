@@ -5,13 +5,15 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('users', '0004_remove_contract_zones'),
-    ]
+    dependencies = [("users", "0004_remove_contract_zones")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
-            options={'ordering': ('id',), 'verbose_name': 'user', 'verbose_name_plural': 'users'},
-        ),
+            name="user",
+            options={
+                "ordering": ("id",),
+                "verbose_name": "user",
+                "verbose_name_plural": "users",
+            },
+        )
     ]

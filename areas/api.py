@@ -31,7 +31,7 @@ class TranslatedModelSerializer(TranslatableModelSerializer, UTCModelSerializer)
     def translated_fields_to_representation(self, obj, ret):
         translated_fields = {}
 
-        for lang_key, trans_dict in ret.pop('translations', {}).items():
+        for lang_key, trans_dict in ret.pop("translations", {}).items():
 
             for field_name, translation in trans_dict.items():
                 if field_name not in translated_fields:
@@ -45,35 +45,32 @@ class TranslatedModelSerializer(TranslatableModelSerializer, UTCModelSerializer)
 
 
 class AdministrativeDivisionSerializer(TranslatedModelSerializer):
-    bbox = serializers.ReadOnlyField(source='geometry.boundary.extent')
+    bbox = serializers.ReadOnlyField(source="geometry.boundary.extent")
 
     class Meta:
         model = AdministrativeDivision
-        fields = ('translations', 'ocd_id', 'origin_id', 'bbox')
+        fields = ("translations", "ocd_id", "origin_id", "bbox")
 
 
 class NeigborhoodSerializer(AdministrativeDivisionSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['sub_districts'] = serializers.SerializerMethodField()
+        self.fields["sub_districts"] = serializers.SerializerMethodField()
 
-        sub_district_qs = self._get_base_sub_district_qs().filter(
-            type__type='sub_district'
-        ).exclude(
-            origin_id='Aluemeri'  # wtf
-        ).select_related(
-            'geometry'
-        ).prefetch_related(
-            'translations'
-        ).order_by(
-            'origin_id'
+        sub_district_qs = (
+            self._get_base_sub_district_qs()
+            .filter(type__type="sub_district")
+            .exclude(origin_id="Aluemeri")  # wtf
+            .select_related("geometry")
+            .prefetch_related("translations")
+            .order_by("origin_id")
         )
 
         # cache sub districts grouped by their parent origin_id for faster access
         sub_district_map = defaultdict(list)
         for sub_district in sub_district_qs:
             origin_id = sub_district.origin_id
-            if origin_id.endswith('0'):
+            if origin_id.endswith("0"):
                 # When a sub district id ends with '0', it means the neighborhood consists of only one sub district,
                 # which for us means basically "the neighborhood has no sub districts", so we skip the sub district.
                 # For example neighborhood Konala 32 has only one sub district, Konala 320.
@@ -85,7 +82,9 @@ class NeigborhoodSerializer(AdministrativeDivisionSerializer):
 
     def get_sub_districts(self, obj):
         sub_districts = self._sub_district_map.get(obj.origin_id, [])
-        serializer = AdministrativeDivisionSerializer(sub_districts, many=True, context=self.context)
+        serializer = AdministrativeDivisionSerializer(
+            sub_districts, many=True, context=self.context
+        )
         return serializer.data
 
     def _get_base_sub_district_qs(self):
@@ -100,32 +99,33 @@ class NeigborhoodSerializer(AdministrativeDivisionSerializer):
         except ValueError:
             return AdministrativeDivision.objects.none()
 
-        if int_origin_id >= 10:  # only neighborhoods with origin id >= 10 can have sub districts
-            origin_id_min = self.instance.origin_id + '0'
-            origin_id_max = self.instance.origin_id + '9'
+        if (
+            int_origin_id >= 10
+        ):  # only neighborhoods with origin id >= 10 can have sub districts
+            origin_id_min = self.instance.origin_id + "0"
+            origin_id_max = self.instance.origin_id + "9"
 
             # filter sub districts based on the neighborhood's id,
             # for example for neighborhood 32 filter sub districts by id 320 - 329
             return AdministrativeDivision.objects.filter(
-                type__type='sub_district', origin_id__gte=origin_id_min, origin_id__lte=origin_id_max
+                type__type="sub_district",
+                origin_id__gte=origin_id_min,
+                origin_id__lte=origin_id_max,
             )
         else:
             return AdministrativeDivision.objects.none()
 
 
 class NeighborhoodViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = AdministrativeDivision.objects.filter(
-        type__type='neighborhood'
-    ).select_related(
-        'geometry'
-    ).prefetch_related(
-        'translations'
-    ).order_by(
-        'origin_id'
+    queryset = (
+        AdministrativeDivision.objects.filter(type__type="neighborhood")
+        .select_related("geometry")
+        .prefetch_related("translations")
+        .order_by("origin_id")
     )
     serializer_class = NeigborhoodSerializer
 
-    @method_decorator(cache_page(settings.CACHES['default'].get('TIMEOUT', 60 * 60)))
+    @method_decorator(cache_page(settings.CACHES["default"].get("TIMEOUT", 60 * 60)))
     def list(self, *args, **kwargs):
         return super().list(*args, **kwargs)
 
@@ -138,29 +138,29 @@ class GeoQueryParamSerializer(serializers.Serializer):
 class StreetSerializer(TranslatedModelSerializer):
     class Meta:
         model = Street
-        fields = ('name', 'translations')
+        fields = ("name", "translations")
 
 
 class AddressSerializer(UTCModelSerializer):
     street = StreetSerializer()
-    distance = serializers.FloatField(source='distance.m')
+    distance = serializers.FloatField(source="distance.m")
 
     class Meta:
         model = Address
-        exclude = ('id', 'modified_at')
+        exclude = ("id", "modified_at")
 
 
 class ContractZoneSerializerBase(UTCModelSerializer):
     class Meta:
         model = ContractZone
-        fields = ('id', 'name', 'active')
+        fields = ("id", "name", "active")
 
 
 class ContractZoneSerializerGeoQueryView(ContractZoneSerializerBase):
-    unavailable_dates = serializers.ReadOnlyField(source='get_unavailable_dates')
+    unavailable_dates = serializers.ReadOnlyField(source="get_unavailable_dates")
 
     class Meta(ContractZoneSerializerBase.Meta):
-        fields = ContractZoneSerializerBase.Meta.fields + ('unavailable_dates',)
+        fields = ContractZoneSerializerBase.Meta.fields + ("unavailable_dates",)
 
 
 class GeoQueryViewSet(viewsets.ViewSet):
@@ -169,38 +169,52 @@ class GeoQueryViewSet(viewsets.ViewSet):
         if not param_serializer.is_valid():
             return Response(param_serializer.errors)
 
-        point = Point(param_serializer.validated_data['lon'], param_serializer.validated_data['lat'])
+        point = Point(
+            param_serializer.validated_data["lon"],
+            param_serializer.validated_data["lat"],
+        )
         neighborhood = AdministrativeDivision.objects.filter(
-            type__type='neighborhood',
-            geometry__boundary__covers=point,
+            type__type="neighborhood", geometry__boundary__covers=point
         ).first()
         address = self.get_closest_address(point)
         contract_zone = ContractZone.objects.filter(boundary__covers=point).first()
 
         data = {
-            'neighborhood': NeigborhoodSerializer(neighborhood).data if neighborhood else None,
-            'closest_address': AddressSerializer(address).data if address else None,
-            'contract_zone': ContractZoneSerializerGeoQueryView(contract_zone).data if contract_zone else None,
+            "neighborhood": NeigborhoodSerializer(neighborhood).data
+            if neighborhood
+            else None,
+            "closest_address": AddressSerializer(address).data if address else None,
+            "contract_zone": ContractZoneSerializerGeoQueryView(contract_zone).data
+            if contract_zone
+            else None,
         }
 
         return Response(data)
 
     @classmethod
     def get_closest_address(cls, point):
-        return Address.objects.annotate(distance=Distance('location', point)).order_by('distance').first()
+        return (
+            Address.objects.annotate(distance=Distance("location", point))
+            .order_by("distance")
+            .first()
+        )
 
 
 class ContractZoneSerializer(ContractZoneSerializerBase):
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
-        if 'request' in self.context and can_view_contract_zone_details(self.context['request'].user):
+        if "request" in self.context and can_view_contract_zone_details(
+            self.context["request"].user
+        ):
             data.update(
                 contact_person=self._get_contact_person_display(instance),
                 email=self._get_email_display(instance),
                 phone=instance.phone,
             )
-            if hasattr(instance, 'event_count') and hasattr(instance, 'estimated_attendee_count'):
+            if hasattr(instance, "event_count") and hasattr(
+                instance, "estimated_attendee_count"
+            ):
                 data.update(
                     event_count=instance.event_count or 0,
                     estimated_attendee_count=instance.estimated_attendee_count or 0,
@@ -214,8 +228,8 @@ class ContractZoneSerializer(ContractZoneSerializerBase):
             return contract_zone.contact_person
         user = contract_zone.contractor_user
         if user:
-            return '{} {}'.format(user.first_name, user.last_name).strip()
-        return ''
+            return "{} {}".format(user.first_name, user.last_name).strip()
+        return ""
 
     @classmethod
     def _get_email_display(cls, contract_zone):
@@ -224,24 +238,28 @@ class ContractZoneSerializer(ContractZoneSerializerBase):
         user = contract_zone.contractor_user
         if user:
             return user.email
-        return ''
+        return ""
 
 
 class ContractZoneFilter(filters.FilterSet):
-    stats_year = filters.NumberFilter(method='filter_stats')
+    stats_year = filters.NumberFilter(method="filter_stats")
 
     def filter_stats(self, queryset, name, value):
         if can_view_contract_zone_details(self.request.user):
-            filtering = Q(events__start_time__date__year=value, events__state=Event.APPROVED)
+            filtering = Q(
+                events__start_time__date__year=value, events__state=Event.APPROVED
+            )
             queryset = queryset.annotate(
-                event_count=Count('events', filter=filtering),
-                estimated_attendee_count=Sum('events__estimated_attendee_count', filter=filtering),
+                event_count=Count("events", filter=filtering),
+                estimated_attendee_count=Sum(
+                    "events__estimated_attendee_count", filter=filtering
+                ),
             )
 
         return queryset
 
 
 class ContractZoneViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ContractZone.objects.all().select_related('contractor_user')
+    queryset = ContractZone.objects.all().select_related("contractor_user")
     serializer_class = ContractZoneSerializer
     filterset_class = ContractZoneFilter

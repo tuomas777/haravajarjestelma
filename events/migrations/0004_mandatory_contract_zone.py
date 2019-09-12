@@ -6,14 +6,17 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0003_event_additional_equipment_information'),
-    ]
+    dependencies = [("events", "0003_event_additional_equipment_information")]
 
     operations = [
         migrations.AlterField(
-            model_name='event',
-            name='contract_zone',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='events', to='areas.ContractZone', verbose_name='contract zone'),
-        ),
+            model_name="event",
+            name="contract_zone",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="events",
+                to="areas.ContractZone",
+                verbose_name="contract zone",
+            ),
+        )
     ]

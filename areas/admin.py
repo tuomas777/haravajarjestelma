@@ -13,15 +13,14 @@ class ContractZoneAdmin(OSMGeoAdmin):
     modifiable = False
 
     fieldsets = (
-        ('', {
-           'fields': ('contact_person', 'phone', 'email', 'contractor_user')
-        }),
-        (_('Imported fields'), {
-            'fields': ('name', 'active', 'origin_id', 'contractor', 'boundary'),
-        }),
+        ("", {"fields": ("contact_person", "phone", "email", "contractor_user")}),
+        (
+            _("Imported fields"),
+            {"fields": ("name", "active", "origin_id", "contractor", "boundary")},
+        ),
     )
 
     def has_add_permission(self, request, obj=None):
         return False
 
-    readonly_fields = ('active', 'name', 'origin_id', 'contractor')
+    readonly_fields = ("active", "name", "origin_id", "contractor")

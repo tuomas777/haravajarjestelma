@@ -81,3 +81,11 @@ Import geo data
 * Run `python manage.py runserver 0:8000`
 
 The project is now running at [localhost:8000](http://localhost:8000)
+
+## Code format
+
+This project uses [`black`](https://github.com/ambv/black) for Python code formatting.
+We follow the basic config, without any modifications. Basic `black` commands:
+
+* To let `black` do its magic: `black .`
+* To see which files `black` would change: `black --check .`

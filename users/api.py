@@ -11,13 +11,13 @@ User = get_user_model()
 class UserSerializer(UTCModelSerializer):
     class Meta:
         model = User
-        fields = ('uuid', 'first_name', 'last_name', 'is_official', 'is_contractor')
+        fields = ("uuid", "first_name", "last_name", "is_official", "is_contractor")
 
 
 class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = 'uuid'
+    lookup_field = "uuid"
 
     def retrieve(self, request, *args, **kwargs):
         user = self.request.user
@@ -25,12 +25,12 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         if not user.is_authenticated:
             raise NotFound
 
-        if kwargs['uuid'] == 'me':
+        if kwargs["uuid"] == "me":
             instance = self.request.user
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
 
-        if kwargs['uuid'] != str(user.uuid):
+        if kwargs["uuid"] != str(user.uuid):
             raise NotFound
 
         return super().retrieve(request, *args, **kwargs)

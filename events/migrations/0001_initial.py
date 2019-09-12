@@ -8,38 +8,105 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Event',
+            name="Event",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('state', models.CharField(choices=[('waiting_for_approval', 'waiting for approval'), ('approved', 'approved')], default='waiting_for_approval', max_length=50, verbose_name='state')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('modified_at', models.DateTimeField(auto_now=True, verbose_name='modified at')),
-                ('name', models.CharField(max_length=255, verbose_name='name')),
-                ('description', models.TextField(verbose_name='description')),
-                ('start_time', models.DateTimeField(verbose_name='start time')),
-                ('end_time', models.DateTimeField(verbose_name='end time')),
-                ('location', django.contrib.gis.db.models.fields.PointField(srid=4326, verbose_name='location')),
-                ('organizer_first_name', models.CharField(max_length=100, verbose_name='organizer first name')),
-                ('organizer_last_name', models.CharField(max_length=100, verbose_name='organizer last name')),
-                ('organizer_email', models.EmailField(max_length=254, verbose_name='organizer email')),
-                ('organizer_phone', models.CharField(max_length=50, verbose_name='organizer phone')),
-                ('estimated_attendee_count', models.PositiveIntegerField(verbose_name='estimated attendee count')),
-                ('targets', models.TextField(verbose_name='targets')),
-                ('maintenance_location', models.TextField(verbose_name='maintenance location')),
-                ('additional_information', models.TextField(blank=True, verbose_name='additional information')),
-                ('trash_bag_count', models.PositiveIntegerField(verbose_name='trash bag count')),
-                ('trash_picker_count', models.PositiveIntegerField(verbose_name='trash picker count')),
-                ('has_roll_off_dumpster', models.BooleanField(default=False, verbose_name='has a roll-off dumpster')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "state",
+                    models.CharField(
+                        choices=[
+                            ("waiting_for_approval", "waiting for approval"),
+                            ("approved", "approved"),
+                        ],
+                        default="waiting_for_approval",
+                        max_length=50,
+                        verbose_name="state",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "modified_at",
+                    models.DateTimeField(auto_now=True, verbose_name="modified at"),
+                ),
+                ("name", models.CharField(max_length=255, verbose_name="name")),
+                ("description", models.TextField(verbose_name="description")),
+                ("start_time", models.DateTimeField(verbose_name="start time")),
+                ("end_time", models.DateTimeField(verbose_name="end time")),
+                (
+                    "location",
+                    django.contrib.gis.db.models.fields.PointField(
+                        srid=4326, verbose_name="location"
+                    ),
+                ),
+                (
+                    "organizer_first_name",
+                    models.CharField(
+                        max_length=100, verbose_name="organizer first name"
+                    ),
+                ),
+                (
+                    "organizer_last_name",
+                    models.CharField(
+                        max_length=100, verbose_name="organizer last name"
+                    ),
+                ),
+                (
+                    "organizer_email",
+                    models.EmailField(max_length=254, verbose_name="organizer email"),
+                ),
+                (
+                    "organizer_phone",
+                    models.CharField(max_length=50, verbose_name="organizer phone"),
+                ),
+                (
+                    "estimated_attendee_count",
+                    models.PositiveIntegerField(
+                        verbose_name="estimated attendee count"
+                    ),
+                ),
+                ("targets", models.TextField(verbose_name="targets")),
+                (
+                    "maintenance_location",
+                    models.TextField(verbose_name="maintenance location"),
+                ),
+                (
+                    "additional_information",
+                    models.TextField(blank=True, verbose_name="additional information"),
+                ),
+                (
+                    "trash_bag_count",
+                    models.PositiveIntegerField(verbose_name="trash bag count"),
+                ),
+                (
+                    "trash_picker_count",
+                    models.PositiveIntegerField(verbose_name="trash picker count"),
+                ),
+                (
+                    "has_roll_off_dumpster",
+                    models.BooleanField(
+                        default=False, verbose_name="has a roll-off dumpster"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'event',
-                'verbose_name_plural': 'events',
-                'ordering': ('id',),
+                "verbose_name": "event",
+                "verbose_name_plural": "events",
+                "ordering": ("id",),
             },
-        ),
+        )
     ]
