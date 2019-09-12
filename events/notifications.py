@@ -16,8 +16,10 @@ def send_event_created_notification(event):
         )
         return
 
-    send_notification(email, NotificationType.EVENT_CREATED, {'event': event})
+    send_notification(email, NotificationType.EVENT_CREATED, {"event": event})
 
 
 def send_event_approved_notification(event):
-    send_notification(event.organizer_email, NotificationType.EVENT_APPROVED, {'event': event})
+    send_notification(
+        event.organizer_email, NotificationType.EVENT_APPROVED, {"event": event}
+    )

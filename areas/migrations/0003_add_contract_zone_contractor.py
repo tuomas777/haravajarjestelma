@@ -9,13 +9,20 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('areas', '0002_add_contract_zone_contact_fields'),
+        ("areas", "0002_add_contract_zone_contact_fields"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='contractzone',
-            name='contractor',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='contract_zones', to=settings.AUTH_USER_MODEL, verbose_name='contractor'),
-        ),
+            model_name="contractzone",
+            name="contractor",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="contract_zones",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="contractor",
+            ),
+        )
     ]

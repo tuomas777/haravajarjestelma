@@ -7,13 +7,22 @@ from events.factories import EventFactory
 
 
 def test_contract_zone_autopopulating():
-    zone_1, zone_2, zone_3 = (ContractZoneFactory(boundary=MultiPolygon(Polygon((
-        (24 + n, 60),
-        (25 + n, 60),
-        (25 + n, 61),
-        (24 + n, 61),
-        (24 + n, 60),
-    )))) for n in range(3))
+    zone_1, zone_2, zone_3 = (
+        ContractZoneFactory(
+            boundary=MultiPolygon(
+                Polygon(
+                    (
+                        (24 + n, 60),
+                        (25 + n, 60),
+                        (25 + n, 61),
+                        (24 + n, 61),
+                        (24 + n, 60),
+                    )
+                )
+            )
+        )
+        for n in range(3)
+    )
 
     point_outside_all_zones = Point(10, 10)
     point_inside_zone_2 = Point(25.5, 60.5)

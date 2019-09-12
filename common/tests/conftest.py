@@ -12,7 +12,7 @@ def set_random_seed():
 
 @pytest.fixture(autouse=True)
 def set_frozen_time():
-    freezer = freeze_time('2018-01-14T08:00:00Z')
+    freezer = freeze_time("2018-01-14T08:00:00Z")
     freezer.start()
     yield
     freezer.stop()
@@ -20,13 +20,11 @@ def set_frozen_time():
 
 @pytest.fixture(autouse=True)
 def force_settings(settings):
-    settings.LANGUAGE_CODE = 'en'
-    settings.LANGUAGES = (
-        ('fi', _('Finnish')),
-    )
+    settings.LANGUAGE_CODE = "en"
+    settings.LANGUAGES = (("fi", _("Finnish")),)
     settings.EVENT_MINIMUM_DAYS_BEFORE_START = 7
-    settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-    settings.DEFAULT_FROM_EMAIL = 'noreply@foo.bar'
+    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+    settings.DEFAULT_FROM_EMAIL = "noreply@foo.bar"
 
 
 @pytest.fixture(autouse=True)

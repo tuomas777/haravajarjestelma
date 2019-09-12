@@ -5,29 +5,26 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('events', '0004_mandatory_contract_zone'),
-    ]
+    dependencies = [("events", "0004_mandatory_contract_zone")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='event',
-            name='has_roll_off_dumpster',
-        ),
+        migrations.RemoveField(model_name="event", name="has_roll_off_dumpster"),
         migrations.RenameField(
-            model_name='event',
-            old_name='trash_bag_count',
-            new_name='large_trash_bag_count',
+            model_name="event",
+            old_name="trash_bag_count",
+            new_name="large_trash_bag_count",
         ),
         migrations.AlterField(
-            model_name='event',
-            name='large_trash_bag_count',
-            field=models.PositiveIntegerField(verbose_name='large trash bag count'),
+            model_name="event",
+            name="large_trash_bag_count",
+            field=models.PositiveIntegerField(verbose_name="large trash bag count"),
         ),
         migrations.AddField(
-            model_name='event',
-            name='small_trash_bag_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='small trash bag count'),
+            model_name="event",
+            name="small_trash_bag_count",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="small trash bag count"
+            ),
             preserve_default=False,
         ),
     ]

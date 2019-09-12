@@ -12,5 +12,7 @@ class UTCDateTimeField(serializers.DateTimeField):
 
 
 class UTCModelSerializer(serializers.ModelSerializer):
-    serializer_field_mapping = deepcopy(serializers.ModelSerializer.serializer_field_mapping)
+    serializer_field_mapping = deepcopy(
+        serializers.ModelSerializer.serializer_field_mapping
+    )
     serializer_field_mapping[models.DateTimeField] = UTCDateTimeField

@@ -12,22 +12,18 @@ from users.factories import UserFactory
 
 from ..factories import ContractZoneFactory
 
-LIST_URL = reverse('v1:contractzone-list')
+LIST_URL = reverse("v1:contractzone-list")
 
 
 @pytest.fixture
 def contract_zone():
     return ContractZoneFactory(
-        boundary=MultiPolygon(Polygon((
-            (24, 60),
-            (25, 60),
-            (25, 61),
-            (24, 61),
-            (24, 60),
-        ))),
-        contact_person='John Doe',
-        email='john@doe.com',
-        phone='555-1234567',
+        boundary=MultiPolygon(
+            Polygon(((24, 60), (25, 60), (25, 61), (24, 61), (24, 60)))
+        ),
+        contact_person="John Doe",
+        email="john@doe.com",
+        phone="555-1234567",
     )
 
 
@@ -43,9 +39,9 @@ def two_events_2019():
 
 def get_expected_base_data(contract_zone):
     return {
-        'id': contract_zone.id,
-        'name': contract_zone.name,
-        'active': contract_zone.active,
+        "id": contract_zone.id,
+        "name": contract_zone.name,
+        "active": contract_zone.active,
     }
 
 
@@ -58,60 +54,71 @@ def get_expected_base_data_with_contact_data(contract_zone):
     )
 
 
-def test_get_list_non_official_no_stats_no_contact_info(contract_zone, two_events_2018, user_api_client):
-    response_data = get(user_api_client, LIST_URL + '?stats_year=2018')
+def test_get_list_non_official_no_stats_no_contact_info(
+    contract_zone, two_events_2018, user_api_client
+):
+    response_data = get(user_api_client, LIST_URL + "?stats_year=2018")
 
-    assert response_data['results'] == [get_expected_base_data(contract_zone)]
+    assert response_data["results"] == [get_expected_base_data(contract_zone)]
 
 
-def test_get_list_official_no_filter_no_stats_check_contact_data(contract_zone, two_events_2018, official_api_client):
+def test_get_list_official_no_filter_no_stats_check_contact_data(
+    contract_zone, two_events_2018, official_api_client
+):
     response_data = get(official_api_client, LIST_URL)
 
-    assert response_data['results'] == [get_expected_base_data_with_contact_data(contract_zone)]
+    assert response_data["results"] == [
+        get_expected_base_data_with_contact_data(contract_zone)
+    ]
 
 
-def test_get_list_official_check_stats(contract_zone, two_events_2018, two_events_2019, official_api_client):
+def test_get_list_official_check_stats(
+    contract_zone, two_events_2018, two_events_2019, official_api_client
+):
     non_approved_event_that_should_be_ignored = EventFactory(
-        estimated_attendee_count=100000,
-        state=Event.WAITING_FOR_APPROVAL,
+        estimated_attendee_count=100000, state=Event.WAITING_FOR_APPROVAL
     )
     assert non_approved_event_that_should_be_ignored.contract_zone == contract_zone
     assert non_approved_event_that_should_be_ignored.start_time.date().year == 2018
 
-    response_data = get(official_api_client, LIST_URL + '?stats_year=2018')
+    response_data = get(official_api_client, LIST_URL + "?stats_year=2018")
 
     event_1, event_2 = two_events_2018
     expected_data = dict(
         get_expected_base_data_with_contact_data(contract_zone),
         event_count=2,
-        estimated_attendee_count=event_1.estimated_attendee_count + event_2.estimated_attendee_count,
+        estimated_attendee_count=event_1.estimated_attendee_count
+        + event_2.estimated_attendee_count,
     )
-    assert response_data['results'] == [expected_data]
+    assert response_data["results"] == [expected_data]
 
 
-@pytest.mark.parametrize('contact_fields_populated', [True, False])
-@pytest.mark.parametrize('has_contractor', [True, False])
-def test_get_list_official_check_contact_data(contract_zone, official_api_client, contact_fields_populated,
-                                              has_contractor):
+@pytest.mark.parametrize("contact_fields_populated", [True, False])
+@pytest.mark.parametrize("has_contractor", [True, False])
+def test_get_list_official_check_contact_data(
+    contract_zone, official_api_client, contact_fields_populated, has_contractor
+):
     if has_contractor:
         user = UserFactory()
         contract_zone.contractor_user = user
-        contract_zone.save(update_fields=('contractor_user',))
+        contract_zone.save(update_fields=("contractor_user",))
     if not contact_fields_populated:
-        contract_zone.contact_person = contract_zone.email = ''
-        contract_zone.save(update_fields=('contact_person', 'email'))
+        contract_zone.contact_person = contract_zone.email = ""
+        contract_zone.save(update_fields=("contact_person", "email"))
 
     response_data = get(official_api_client, LIST_URL)
 
-    assert len(response_data['results']) == 1
-    contract_zone_data = response_data['results'][0]
+    assert len(response_data["results"]) == 1
+    contract_zone_data = response_data["results"][0]
     if contact_fields_populated:
-        assert contract_zone_data['contact_person'] == contract_zone.contact_person
-        assert contract_zone_data['email'] == contract_zone.email
+        assert contract_zone_data["contact_person"] == contract_zone.contact_person
+        assert contract_zone_data["email"] == contract_zone.email
     elif has_contractor:
-        assert contract_zone_data['contact_person'] == '{} {}'.format(user.first_name, user.last_name)
-        assert contract_zone_data['email'] == user.email
+        assert contract_zone_data["contact_person"] == "{} {}".format(
+            user.first_name, user.last_name
+        )
+        assert contract_zone_data["email"] == user.email
     else:
-        assert contract_zone_data['contact_person'] == ''
-        assert contract_zone_data['email'] == ''
-    assert contract_zone_data['phone'] == contract_zone.phone
+        assert contract_zone_data["contact_person"] == ""
+        assert contract_zone_data["email"] == ""
+    assert contract_zone_data["phone"] == contract_zone.phone

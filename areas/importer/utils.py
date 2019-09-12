@@ -17,8 +17,10 @@ class ModelSyncher(object):
         self.delete_func = delete_func
 
     def mark(self, obj):
-        if getattr(obj, '_found', False):
-            raise Exception('Object %s (%s) already marked' % (obj, self.generate_obj_id(obj)))
+        if getattr(obj, "_found", False):
+            raise Exception(
+                "Object %s (%s) already marked" % (obj, self.generate_obj_id(obj))
+            )
 
         obj._found = True
         obj_id = self.generate_obj_id(obj)
@@ -41,9 +43,9 @@ class ModelSyncher(object):
     def finish(self):
         delete_list = self.get_deleted_objects()
         if len(delete_list) > 5 and len(delete_list) > len(self.obj_dict) * 0.4:
-            raise Exception('Attempting to delete more than 40% of total items')
+            raise Exception("Attempting to delete more than 40% of total items")
         for obj in delete_list:
-            logger.debug('Deleting object %s' % obj)
+            logger.debug("Deleting object %s" % obj)
             if self.delete_func:
                 self.delete_func(obj)
             else:

@@ -1,4 +1,4 @@
-branches: {only: [master]}
+branches: {only: [master, develop]}
 sudo: false
 language: python
 python: 3.6
@@ -24,5 +24,6 @@ matrix:
     - env: TEST_PART=style
       install: pip install -r requirements.txt -r requirements-dev.txt
       script:
+        - black --check .
         - flake8
         - isort -c
