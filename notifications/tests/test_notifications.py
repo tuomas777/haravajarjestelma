@@ -90,7 +90,7 @@ def test_undefined_rendering_context_variable(notification_template):
 
     with pytest.raises(NotificationTemplateException) as e:
         render_notification_template(NotificationType.EVENT_CREATED, context, "fi")
-    assert "'body_html_var' is undefined" in str(e)
+    assert "'body_html_var' is undefined" in str(e.value)
 
 
 def test_notification_sending(notification_template):

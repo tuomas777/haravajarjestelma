@@ -249,7 +249,7 @@ class ContractZoneFilter(filters.FilterSet):
             filtering = Q(
                 events__start_time__date__year=value, events__state=Event.APPROVED
             )
-            queryset = queryset.annotate(
+            queryset = queryset.order_by("id").annotate(
                 event_count=Count("events", filter=filtering),
                 estimated_attendee_count=Sum(
                     "events__estimated_attendee_count", filter=filtering
