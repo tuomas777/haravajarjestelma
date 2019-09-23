@@ -1,10 +1,10 @@
 import pytest
 from django.core import mail
+from django_ilmoitin.models import NotificationTemplate
 
 from events.factories import EventFactory
 from events.models import Event
-from notifications.enums import NotificationType
-from notifications.models import NotificationTemplate
+from events.notifications import NotificationType
 
 
 @pytest.fixture
