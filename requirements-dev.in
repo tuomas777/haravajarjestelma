@@ -1,0 +1,9 @@
+autopep8
+flake8
+ipython
+isort
+pytest
+pytest-cov
+pytest-django
+freezegun
+black

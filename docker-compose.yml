@@ -1,0 +1,35 @@
+version: '3'
+services:
+    postgres:
+        build: ./docker/postgres/
+        environment:
+            POSTGRES_USER: haravajarjestelma
+            POSTGRES_PASSWORD: haravajarjestelma
+            POSTGRES_DB: haravajarjestelma
+        ports:
+            - "5432:5432"
+        volumes:
+            - haravajarjestelma-postgres-data-volume:/var/lib/postgresql/data
+        container_name: haravajarjestelma-db
+
+    django:
+        build:
+            context: ./
+            dockerfile: ./docker/django/Dockerfile
+        command: python manage.py runserver 0:8000
+        env_file:
+            - ./.env
+        environment:
+            DATABASE_URL: postgis://haravajarjestelma:haravajarjestelma@haravajarjestelma-db/haravajarjestelma
+        volumes:
+            - .:/code
+            - haravajarjestelma-django-media-volume:/var/media/
+        ports:
+            - "8000:8000"
+        depends_on:
+            - postgres
+        container_name: haravajarjestelma
+
+volumes:
+        haravajarjestelma-postgres-data-volume:
+        haravajarjestelma-django-media-volume:

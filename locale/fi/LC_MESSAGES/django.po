@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-03-15 14:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Imported fields"
+msgstr "Importoidut kentät"
+
+msgid "Areas"
+msgstr "Alueet"
+
+msgid "origin ID"
+msgstr "alkuperäinen ID"
+
+msgid "name"
+msgstr "nimi"
+
+msgid "boundary"
+msgstr "raja"
+
+msgid "contact person"
+msgstr "kontaktihenkilö"
+
+msgid "email"
+msgstr "sähköposti"
+
+msgid "phone"
+msgstr "puhelinnumero"
+
+msgid "contractor"
+msgstr "urakoitsija"
+
+msgid "contractor user"
+msgstr "urakoitsijan käyttäjä"
+
+msgid "active"
+msgstr "voimassa"
+
+msgid "contract zone"
+msgstr "urakka-alue"
+
+msgid "contract zones"
+msgstr "urakka-alueet"
+
+msgid "Finnish"
+msgstr "suomi"
+
+msgid "Event must start before ending."
+msgstr "Tapahtuman alkuajan täytyy olla ennen sen loppuaikaa."
+
+msgid "Unavailable dates: {}"
+msgstr "Ei saatavilla olevat päivämäärät: {}"
+
+msgid "Events"
+msgstr "Tapahtumat"
+
+msgid "Location must be inside a contract zone."
+msgstr "Sijainnin täytyy olla urakka-alueen sisällä."
+
+msgid "waiting for approval"
+msgstr "odottaa hyväksyntää"
+
+msgid "approved"
+msgstr "hyväksytty"
+
+msgid "state"
+msgstr "tila"
+
+msgid "created at"
+msgstr "luotu"
+
+msgid "modified at"
+msgstr "muokattu"
+
+msgid "description"
+msgstr "kuvaus"
+
+msgid "start time"
+msgstr "alkuaika"
+
+msgid "end time"
+msgstr "loppuaika"
+
+msgid "location"
+msgstr "sijainti"
+
+msgid "organizer first name"
+msgstr "järjestäjän etunimi"
+
+msgid "organizer last name"
+msgstr "järjestäjän sukunimi"
+
+msgid "organizer email"
+msgstr "järjestäjän sähköposti"
+
+msgid "organizer phone"
+msgstr "järjestäjän puhelinnumero"
+
+msgid "estimated attendee count"
+msgstr "arvioitu osallistujamäärä"
+
+msgid "targets"
+msgstr "siivouskohteet"
+
+msgid "maintenance location"
+msgstr "sijainti, johon tarvikkeet tuodaan ja roskat viedään"
+
+msgid "additional information"
+msgstr "lisätiedot"
+
+msgid "small trash bag count"
+msgstr "pieniä jätesäkkejä"
+
+msgid "large trash bag count"
+msgstr "suuria jätesäkkejä"
+
+msgid "trash picker count"
+msgstr "jätepihtejä"
+
+msgid "additional equipment information"
+msgstr "varusteiden lisätiedot"
+
+msgid "event"
+msgstr "tapahtuma"
+
+msgid "events"
+msgstr "tapahtumat"
+
+msgid "Notifications"
+msgstr "Herätteet"
+
+msgid "Event created"
+msgstr "Tapahtuma luotu"
+
+msgid "type"
+msgstr "tyyppi"
+
+msgid "subject"
+msgstr "otsikko"
+
+msgid "body, HTML version"
+msgstr "sisältö, HTML-versio"
+
+msgid "body, plain text version"
+msgstr "sisältö, tekstiversio"
+
+msgid "If left blank, the HTML version without HTML tags will be used."
+msgstr ""
+"Mikäli tätä ei täytetä, käytetään tekstiversiona HTML-versiota, josta on "
+"poistettu HTML tagit."
+
+msgid "notification"
+msgstr "heräte"
+
+msgid "notifications"
+msgstr "herätteet"
+
+msgid "Users"
+msgstr "Käyttäjät"
+
+msgid "official"
+msgstr "virkailija"
+
+msgid "user"
+msgstr "käyttäjä"
+
+msgid "users"
+msgstr "käyttäjät"

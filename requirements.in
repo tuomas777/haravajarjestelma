@@ -1,0 +1,16 @@
+django-environ
+Django
+psycopg2-binary
+raven
+djangorestframework
+django-cors-headers
+django-helusers
+djangorestframework-gis
+django-munigeo
+django-parler
+django-parler-rest
+django-filter
+holidays
+django-enumfields
+django-ilmoitin
+factory_boy
