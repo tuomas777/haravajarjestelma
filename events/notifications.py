@@ -1,12 +1,9 @@
 import logging
 
 from django.utils.translation import ugettext_lazy as _
-from django_ilmoitin.dummy_context import dummy_context
 from django_ilmoitin.registry import notifications
 from django_ilmoitin.utils import send_notification
 from enumfields import Enum
-
-from events.factories import EventFactory
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +23,6 @@ notifications.register(
 notifications.register(
     NotificationType.EVENT_APPROVED.value, NotificationType.EVENT_APPROVED.label
 )
-
-
-# dummy_context.context.update({"event": EventFactory.build()})
 
 
 def send_event_created_notification(event):

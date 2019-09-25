@@ -15,8 +15,6 @@ matrix:
     - env: TEST_PART=tests DATABASE_URL=postgis:///haravajarjestelma
       services: [postgresql]
       install: pip install -r requirements.txt -r requirements-dev.txt
-      before_script:
-        - psql -U postgres -c "create extension postgis"
       script: pytest -ra -vv --doctest-modules --cov=.
       after_success: pip install codecov && codecov
 
