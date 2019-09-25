@@ -16,8 +16,8 @@ matrix:
       services: [postgresql]
       install: pip install -r requirements.txt -r requirements-dev.txt
       before_script:
-        - psql -U postgres -c "create extension postgis"
-        - createdb open_city_profile
+        - createdb haravajarjestelma
+        - psql -U postgres -d haravajarjestelma -c "create extension postgis"
       script: pytest -ra -vv --doctest-modules --cov=.
       after_success: pip install codecov && codecov
 
