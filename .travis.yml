@@ -18,6 +18,7 @@ matrix:
       before_script:
         - createdb haravajarjestelma
         - psql -U postgres -d haravajarjestelma -c "create extension postgis"
+        - pytest --version
       script: pytest -ra -vv --doctest-modules --cov=.
       after_success: pip install codecov && codecov
 
