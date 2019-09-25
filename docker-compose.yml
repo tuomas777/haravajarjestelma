@@ -20,7 +20,7 @@ services:
         env_file:
             - ./.env
         environment:
-            DATABASE_URL: postgres://haravajarjestelma:haravajarjestelma@haravajarjestelma-db/haravajarjestelma
+            DATABASE_URL: postgis://haravajarjestelma:haravajarjestelma@haravajarjestelma-db/haravajarjestelma
         volumes:
             - .:/code
             - haravajarjestelma-django-media-volume:/var/media/
