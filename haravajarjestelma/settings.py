@@ -123,7 +123,7 @@ INSTALLED_APPS = [
     "events",
     "users",
     "areas",
-    "notifications",
+    "django_ilmoitin",
 ]
 
 MIDDLEWARE = [

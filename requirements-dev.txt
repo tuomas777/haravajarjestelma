@@ -14,8 +14,6 @@ click==7.0                # via black
 coverage==4.5.4           # via pytest-cov
 decorator==4.4.0          # via ipython, traitlets
 entrypoints==0.3          # via flake8
-factory-boy==2.12.0
-faker==2.0.1              # via factory-boy
 flake8==3.7.8
 freezegun==0.3.12
 importlib-metadata==0.22  # via pluggy, pytest
@@ -40,9 +38,8 @@ pyparsing==2.4.2          # via packaging
 pytest-cov==2.7.1
 pytest-django==3.5.1
 pytest==5.1.2
-python-dateutil==2.8.0    # via faker, freezegun
-six==1.12.0               # via faker, freezegun, packaging, prompt-toolkit, python-dateutil, traitlets
-text-unidecode==1.2       # via faker
+python-dateutil==2.8.0    # via freezegun
+six==1.12.0               # via freezegun, packaging, prompt-toolkit, python-dateutil, traitlets
 toml==0.10.0              # via black
 traitlets==4.3.2          # via ipython
 wcwidth==0.1.7            # via prompt-toolkit, pytest

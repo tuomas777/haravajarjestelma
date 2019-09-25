@@ -8,3 +8,4 @@ class EventsConfig(AppConfig):
 
     def ready(self):
         import events.receivers  # noqa
+        import events.notifications  # noqa

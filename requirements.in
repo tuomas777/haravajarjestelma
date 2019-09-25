@@ -12,6 +12,5 @@ django-parler-rest
 django-filter
 holidays
 django-enumfields
-jinja2
-django-anymail
-django-mailer
+django-ilmoitin
+factory_boy
