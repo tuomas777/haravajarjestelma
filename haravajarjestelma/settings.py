@@ -120,9 +120,9 @@ INSTALLED_APPS = [
     "parler",
     "anymail",
     "mailer",
-    "events",
     "users",
     "areas",
+    "events",
     "django_ilmoitin",
 ]
 
