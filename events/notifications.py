@@ -28,7 +28,7 @@ notifications.register(
 )
 
 
-dummy_context.context.update({"event": EventFactory.build()})
+# dummy_context.context.update({"event": EventFactory.build()})
 
 
 def send_event_created_notification(event):
