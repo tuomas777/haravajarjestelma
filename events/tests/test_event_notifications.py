@@ -18,10 +18,30 @@ def notification_template_event_created():
 
 
 @pytest.fixture
-def notification_template_event_approved():
+def notification_template_event_approved_to_organizer():
     return NotificationTemplate.objects.language("fi").create(
-        type=NotificationType.EVENT_APPROVED,
-        subject="test event approved subject, event: {{ event.name }}!",
+        type=NotificationType.EVENT_APPROVED_TO_ORGANIZER,
+        subject="hello organizer! event {{ event.name }} approved!",
+        body_html="<b>test event approved body HTML!</b>",
+        body_text="test event approved body text!",
+    )
+
+
+@pytest.fixture
+def notification_template_event_approved_to_contractor():
+    return NotificationTemplate.objects.language("fi").create(
+        type=NotificationType.EVENT_APPROVED_TO_CONTRACTOR,
+        subject="hello contractor! event {{ event.name }} approved!",
+        body_html="<b>test event approved body HTML!</b>",
+        body_text="test event approved body text!",
+    )
+
+
+@pytest.fixture
+def notification_template_event_approved_to_official():
+    return NotificationTemplate.objects.language("fi").create(
+        type=NotificationType.EVENT_APPROVED_TO_OFFICIAL,
+        subject="hello official! event {{ event.name }} approved!",
         body_html="<b>test event approved body HTML!</b>",
         body_text="test event approved body text!",
     )
@@ -67,9 +87,18 @@ def test_notification_is_not_sent_when_event_modified_or_deleted(
     assert len(mail.outbox) == 0
 
 
-def test_event_approved_notification_is_sent_to_organizer(
-    contract_zone, user, notification_template_event_approved
+def test_event_approved_to_organizer_notification_is_sent_to_organizer_and_contractor_and_official(
+    contract_zone,
+    user,
+    notification_template_event_approved_to_organizer,
+    notification_template_event_approved_to_contractor,
+    notification_template_event_approved_to_official,
+    contractor,
+    official,
 ):
+    contract_zone.contractor_user = contractor
+    contract_zone.save(update_fields=("contractor_user",))
+
     event = EventFactory(
         state=Event.WAITING_FOR_APPROVAL, organizer_email="organizer@example.com"
     )
@@ -77,8 +106,10 @@ def test_event_approved_notification_is_sent_to_organizer(
     event.state = Event.APPROVED
     event.save()
 
-    assert len(mail.outbox) == 1
+    assert len(mail.outbox) == 3
+    subject_str = "hello {}! event {} approved!"
+
     assert mail.outbox[0].to == ["organizer@example.com"]
-    assert mail.outbox[0].subject == "test event approved subject, event: {}!".format(
-        event.name
-    )
+    assert mail.outbox[0].subject == subject_str.format("organizer", event.name)
+    assert mail.outbox[1].subject == subject_str.format("contractor", event.name)
+    assert mail.outbox[2].subject == subject_str.format("official", event.name)
