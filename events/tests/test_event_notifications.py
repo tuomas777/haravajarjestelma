@@ -11,7 +11,7 @@ from events.notifications import NotificationType
 def notification_template_event_created():
     return NotificationTemplate.objects.language("fi").create(
         type=NotificationType.EVENT_CREATED,
-        subject="test event created subject, event: {{ event.name }}!",
+        subject="test event created subject, event: {{ event.name }}! user is official: {{ user.is_official }}!",
         body_html="<b>test event created body HTML!</b>",
         body_text="test event created body text!",
     )
@@ -27,18 +27,18 @@ def notification_template_event_approved():
     )
 
 
-def test_event_created_notification_is_sent_to_contractor(
-    contract_zone, user, notification_template_event_created
+def test_event_created_notification_is_sent_to_contractor_and_admin(
+    contract_zone, user, notification_template_event_created, official
 ):
     contract_zone.contractor_user = user
     contract_zone.save(update_fields=("contractor_user",))
 
     event = EventFactory()
 
-    assert len(mail.outbox) == 1
-    assert mail.outbox[0].subject == "test event created subject, event: {}!".format(
-        event.name
-    )
+    assert len(mail.outbox) == 2
+    subject_str = "test event created subject, event: {}! user is official: {}!"
+    assert mail.outbox[0].subject == subject_str.format(event.name, False)
+    assert mail.outbox[1].subject == subject_str.format(event.name, True)
 
 
 def test_event_created_notification_is_not_sent_to_other_contractor(

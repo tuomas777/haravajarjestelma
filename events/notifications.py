@@ -1,9 +1,12 @@
 import logging
 
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django_ilmoitin.registry import notifications
 from django_ilmoitin.utils import send_notification
 from enumfields import Enum
+
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -26,16 +29,26 @@ notifications.register(
 
 
 def send_event_created_notification(event):
-    email = event.contract_zone.get_contact_email()
-    if not email:
+    contact_email = event.contract_zone.get_contact_email()
+    if contact_email:
+        send_notification(
+            contact_email,
+            NotificationType.EVENT_CREATED,
+            {"event": event, "user": event.contract_zone.contractor_user},
+        )
+    else:
         logger.warning(
-            'Contract zone {} has no contact email so cannot send "event created" notification.'.format(
+            'Contract zone {} has no contact email so cannot send "event created" notification there.'.format(
                 event.contract_zone
             )
         )
-        return
 
-    send_notification(email, NotificationType.EVENT_CREATED, {"event": event})
+    for official in User.objects.filter(is_official=True):
+        send_notification(
+            official.email,
+            NotificationType.EVENT_CREATED,
+            {"event": event, "user": official},
+        )
 
 
 def send_event_approved_notification(event):
