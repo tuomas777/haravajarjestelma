@@ -82,6 +82,13 @@ class Event(models.Model):
         on_delete=models.PROTECT,
     )
 
+    reminder_sent_at = models.DateTimeField(
+        verbose_name=_("reminder notification sent at"),
+        blank=True,
+        null=True,
+        editable=False,
+    )
+
     objects = EventQuerySet.as_manager()
 
     class Meta:

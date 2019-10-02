@@ -1,19 +1,15 @@
 from collections import defaultdict
 from datetime import timedelta
 
-import holidays
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.utils.timezone import localtime, now
 from django.utils.translation import ugettext_lazy as _
 from munigeo.utils import get_default_srid
 
-PROJECTION_SRID = get_default_srid()
+from common.utils import date_range, is_vacation_day, ONE_DAY
 
-ONE_DAY = timedelta(days=1)
-SATURDAY = 6
-SUNDAY = 7
-HOLIDAYS_FINLAND = holidays.Finland()
+PROJECTION_SRID = get_default_srid()
 
 
 class ContractZoneQuerySet(models.QuerySet):
@@ -123,14 +119,3 @@ def get_affected_dates(date):
         end_date += ONE_DAY
 
     return [d for d in date_range(start_date, end_date)]
-
-
-def date_range(start, end):
-    current = start
-    while current <= end:
-        yield current
-        current += ONE_DAY
-
-
-def is_vacation_day(date):
-    return date.isoweekday() in (SATURDAY, SUNDAY) or date in HOLIDAYS_FINLAND

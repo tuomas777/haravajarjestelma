@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django_ilmoitin.registry import notifications
 from django_ilmoitin.utils import send_notification
@@ -16,12 +17,14 @@ class NotificationType(Enum):
     EVENT_APPROVED_TO_ORGANIZER = "event_approved_to_organizer"
     EVENT_APPROVED_TO_CONTRACTOR = "event_approved_to_contractor"
     EVENT_APPROVED_TO_OFFICIAL = "event_approved_to_official"
+    EVENT_REMINDER = "event_reminder"
 
     class Labels:
         EVENT_CREATED = _("Event created")
         EVENT_APPROVED_TO_ORGANIZER = _("Event approved notification to organizer")
         EVENT_APPROVED_TO_CONTRACTOR = _("Event approved notification to contractor")
         EVENT_APPROVED_TO_OFFICIAL = _("Event approved notification to official")
+        EVENT_REMINDER = _("Event reminder")
 
 
 notifications.register(
@@ -39,11 +42,14 @@ notifications.register(
     NotificationType.EVENT_APPROVED_TO_OFFICIAL.value,
     NotificationType.EVENT_APPROVED_TO_OFFICIAL.label,
 )
+notifications.register(
+    NotificationType.EVENT_REMINDER.value, NotificationType.EVENT_REMINDER.label
+)
 
 
 def send_event_created_notification(event):
     _send_notifications_to_contractor_and_officials(
-        event, NotificationType.EVENT_CREATED
+        event, NotificationType.EVENT_CREATED.value
     )
 
 
@@ -58,6 +64,25 @@ def send_event_approved_notification(event):
         NotificationType.EVENT_APPROVED_TO_CONTRACTOR,
         NotificationType.EVENT_APPROVED_TO_OFFICIAL,
     )
+
+
+def send_event_reminder_notification(event):
+    contact_email = event.contract_zone.get_contact_email()
+
+    if not contact_email:
+        logger.warning(
+            'Contract zone {} has no contact email so cannot send "event_reminder" notification there.'
+        ).format(event.contract_zone)
+        return
+
+    send_notification(
+        contact_email,
+        NotificationType.EVENT_REMINDER,
+        {"event": event, "user": event.contract_zone.contractor_user},
+    )
+
+    event.reminder_sent_at = now()
+    event.save(update_fields=("reminder_sent_at",))
 
 
 def _send_notifications_to_contractor_and_officials(
