@@ -15,7 +15,7 @@ from events.notifications import NotificationType
 @pytest.fixture
 def notification_template_event_created():
     return NotificationTemplate.objects.language("fi").create(
-        type=NotificationType.EVENT_CREATED,
+        type=NotificationType.EVENT_CREATED.value,
         subject="test event created subject, event: {{ event.name }}! user is official: {{ user.is_official }}!",
         body_html="<b>test event created body HTML!</b>",
         body_text="test event created body text!",
@@ -25,7 +25,7 @@ def notification_template_event_created():
 @pytest.fixture
 def notification_template_event_approved_to_organizer():
     return NotificationTemplate.objects.language("fi").create(
-        type=NotificationType.EVENT_APPROVED_TO_ORGANIZER,
+        type=NotificationType.EVENT_APPROVED_TO_ORGANIZER.value,
         subject="hello organizer! event {{ event.name }} approved!",
         body_html="<b>test event approved body HTML!</b>",
         body_text="test event approved body text!",
@@ -35,7 +35,7 @@ def notification_template_event_approved_to_organizer():
 @pytest.fixture
 def notification_template_event_approved_to_contractor():
     return NotificationTemplate.objects.language("fi").create(
-        type=NotificationType.EVENT_APPROVED_TO_CONTRACTOR,
+        type=NotificationType.EVENT_APPROVED_TO_CONTRACTOR.value,
         subject="hello contractor! event {{ event.name }} approved!",
         body_html="<b>test event approved body HTML!</b>",
         body_text="test event approved body text!",
@@ -45,7 +45,7 @@ def notification_template_event_approved_to_contractor():
 @pytest.fixture
 def notification_template_event_approved_to_official():
     return NotificationTemplate.objects.language("fi").create(
-        type=NotificationType.EVENT_APPROVED_TO_OFFICIAL,
+        type=NotificationType.EVENT_APPROVED_TO_OFFICIAL.value,
         subject="hello official! event {{ event.name }} approved!",
         body_html="<b>test event approved body HTML!</b>",
         body_text="test event approved body text!",
@@ -55,7 +55,7 @@ def notification_template_event_approved_to_official():
 @pytest.fixture
 def notification_template_event_reminder():
     return NotificationTemplate.objects.language("fi").create(
-        type=NotificationType.EVENT_REMINDER,
+        type=NotificationType.EVENT_REMINDER.value,
         subject="hello {{ user.first_name }}! don't forget event {{ event.name }}!",
         body_html="<b>test event reminder body HTML!</b>",
         body_text="test event reminder body text!",

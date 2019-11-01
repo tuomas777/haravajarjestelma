@@ -56,13 +56,13 @@ def send_event_created_notification(event):
 def send_event_approved_notification(event):
     send_notification(
         event.organizer_email,
-        NotificationType.EVENT_APPROVED_TO_ORGANIZER,
+        NotificationType.EVENT_APPROVED_TO_ORGANIZER.value,
         {"event": event},
     )
     _send_notifications_to_contractor_and_officials(
         event,
-        NotificationType.EVENT_APPROVED_TO_CONTRACTOR,
-        NotificationType.EVENT_APPROVED_TO_OFFICIAL,
+        NotificationType.EVENT_APPROVED_TO_CONTRACTOR.value,
+        NotificationType.EVENT_APPROVED_TO_OFFICIAL.value,
     )
 
 
@@ -77,7 +77,7 @@ def send_event_reminder_notification(event):
 
     send_notification(
         contact_email,
-        NotificationType.EVENT_REMINDER,
+        NotificationType.EVENT_REMINDER.value,
         {"event": event, "user": event.contract_zone.contractor_user},
     )
 
@@ -101,7 +101,7 @@ def _send_notifications_to_contractor_and_officials(
     else:
         logger.warning(
             'Contract zone {} has no contact email so cannot send "{}" notification there.'.format(
-                event.contract_zone, notification_type_contractor.label
+                event.contract_zone, notification_type_contractor
             )
         )
 
