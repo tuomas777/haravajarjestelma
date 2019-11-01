@@ -26,7 +26,7 @@ class HelsinkiImporter:
             "SERVICE": "WFS",
             "VERSION": "2.0.0",
             "REQUEST": "GetFeature",
-            "TYPENAME": "avoindata:Vastuualue_rya_urakkarajat",
+            "TYPENAME": "Vastuualue_rya_urakkarajat",
             "SRSNAME": "EPSG:{}".format(settings.DEFAULT_SRID),
             "cql_filter": "tehtavakokonaisuus='PUISTO' and status='voimassa'",
         }
@@ -54,6 +54,9 @@ class HelsinkiImporter:
                 "name": str(feat["nimi"]),
                 "boundary": feat.geom.geos,
                 "contractor": str(feat["urakoitsija"]),
+                "contact_person": str(feat["vastuuhlo"]),
+                "email": str(feat["vastuuhlo_email"]),
+                "phone": str(feat["vastuuhlo_puh"]),
                 "origin_id": str(feat["id"]),
                 "active": True,
             }
