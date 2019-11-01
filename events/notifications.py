@@ -1,44 +1,113 @@
 import logging
 
+from django.contrib.auth import get_user_model
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django_ilmoitin.registry import notifications
 from django_ilmoitin.utils import send_notification
 from enumfields import Enum
+
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
 
 class NotificationType(Enum):
     EVENT_CREATED = "event_created"
-    EVENT_APPROVED = "event_approved"
+    EVENT_APPROVED_TO_ORGANIZER = "event_approved_to_organizer"
+    EVENT_APPROVED_TO_CONTRACTOR = "event_approved_to_contractor"
+    EVENT_APPROVED_TO_OFFICIAL = "event_approved_to_official"
+    EVENT_REMINDER = "event_reminder"
 
     class Labels:
         EVENT_CREATED = _("Event created")
-        EVENT_APPROVED = _("Event approved")
+        EVENT_APPROVED_TO_ORGANIZER = _("Event approved notification to organizer")
+        EVENT_APPROVED_TO_CONTRACTOR = _("Event approved notification to contractor")
+        EVENT_APPROVED_TO_OFFICIAL = _("Event approved notification to official")
+        EVENT_REMINDER = _("Event reminder")
 
 
 notifications.register(
     NotificationType.EVENT_CREATED.value, NotificationType.EVENT_CREATED.label
 )
 notifications.register(
-    NotificationType.EVENT_APPROVED.value, NotificationType.EVENT_APPROVED.label
+    NotificationType.EVENT_APPROVED_TO_ORGANIZER.value,
+    NotificationType.EVENT_APPROVED_TO_ORGANIZER.label,
+)
+notifications.register(
+    NotificationType.EVENT_APPROVED_TO_CONTRACTOR.value,
+    NotificationType.EVENT_APPROVED_TO_CONTRACTOR.label,
+)
+notifications.register(
+    NotificationType.EVENT_APPROVED_TO_OFFICIAL.value,
+    NotificationType.EVENT_APPROVED_TO_OFFICIAL.label,
+)
+notifications.register(
+    NotificationType.EVENT_REMINDER.value, NotificationType.EVENT_REMINDER.label
 )
 
 
 def send_event_created_notification(event):
-    email = event.contract_zone.get_contact_email()
-    if not email:
-        logger.warning(
-            'Contract zone {} has no contact email so cannot send "event created" notification.'.format(
-                event.contract_zone
-            )
-        )
-        return
-
-    send_notification(email, NotificationType.EVENT_CREATED, {"event": event})
+    _send_notifications_to_contractor_and_officials(
+        event, NotificationType.EVENT_CREATED.value
+    )
 
 
 def send_event_approved_notification(event):
     send_notification(
-        event.organizer_email, NotificationType.EVENT_APPROVED, {"event": event}
+        event.organizer_email,
+        NotificationType.EVENT_APPROVED_TO_ORGANIZER.value,
+        {"event": event},
     )
+    _send_notifications_to_contractor_and_officials(
+        event,
+        NotificationType.EVENT_APPROVED_TO_CONTRACTOR.value,
+        NotificationType.EVENT_APPROVED_TO_OFFICIAL.value,
+    )
+
+
+def send_event_reminder_notification(event):
+    contact_email = event.contract_zone.get_contact_email()
+
+    if not contact_email:
+        logger.warning(
+            'Contract zone {} has no contact email so cannot send "event_reminder" notification there.'
+        ).format(event.contract_zone)
+        return
+
+    send_notification(
+        contact_email,
+        NotificationType.EVENT_REMINDER.value,
+        {"event": event, "user": event.contract_zone.contractor_user},
+    )
+
+    event.reminder_sent_at = now()
+    event.save(update_fields=("reminder_sent_at",))
+
+
+def _send_notifications_to_contractor_and_officials(
+    event, notification_type_contractor, notification_type_official=None
+):
+    if not notification_type_official:
+        notification_type_official = notification_type_contractor
+
+    contact_email = event.contract_zone.get_contact_email()
+    if contact_email:
+        send_notification(
+            contact_email,
+            notification_type_contractor,
+            {"event": event, "user": event.contract_zone.contractor_user},
+        )
+    else:
+        logger.warning(
+            'Contract zone {} has no contact email so cannot send "{}" notification there.'.format(
+                event.contract_zone, notification_type_contractor
+            )
+        )
+
+    for official in User.objects.filter(is_official=True):
+        send_notification(
+            official.email,
+            notification_type_official,
+            {"event": event, "user": official},
+        )

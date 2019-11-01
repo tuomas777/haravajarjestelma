@@ -2,15 +2,16 @@ from django.utils.timezone import localtime
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, viewsets
 
-from areas.models import ContractZone, date_range
+from areas.models import ContractZone
 from common.api import UTCModelSerializer
+from common.utils import date_range
 from events.models import ERROR_MSG_NO_CONTRACT_ZONE, Event
 
 
 class EventSerializer(UTCModelSerializer):
     class Meta:
         model = Event
-        fields = "__all__"
+        exclude = ("reminder_sent_at",)
         read_only_fields = ("contract_zone",)
 
     def get_fields(self):

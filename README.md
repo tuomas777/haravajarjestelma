@@ -82,6 +82,10 @@ Import geo data
 
 The project is now running at [localhost:8000](http://localhost:8000)
 
+### Periodic tasks
+
+In order to get reminder notifications of upcoming events sent to contractors, `./manage.py send_event_reminder_notifications` needs to be run periodically, preferably daily.
+
 ## Code format
 
 This project uses [`black`](https://github.com/ambv/black) for Python code formatting.
