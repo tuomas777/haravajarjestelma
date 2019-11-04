@@ -1,6 +1,5 @@
 from django.contrib.admin import register
 from django.contrib.gis.admin import OSMGeoAdmin
-from django.utils.translation import ugettext_lazy as _
 
 from .models import ContractZone
 
@@ -11,16 +10,28 @@ class ContractZoneAdmin(OSMGeoAdmin):
     default_lat = 8438120
     default_zoom = 10
     modifiable = False
-
-    fieldsets = (
-        ("", {"fields": ("contact_person", "phone", "email", "contractor_user")}),
-        (
-            _("Imported fields"),
-            {"fields": ("name", "active", "origin_id", "contractor", "boundary")},
-        ),
+    list_display = ("name", "active")
+    ordering = ("name",)
+    fields = (
+        "name",
+        "boundary",
+        "active",
+        "origin_id",
+        "contractor",
+        "contact_person",
+        "phone",
+        "email",
+        "contractor_user",
+    )
+    readonly_fields = (
+        "active",
+        "name",
+        "origin_id",
+        "contractor",
+        "contact_person",
+        "phone",
+        "email",
     )
 
     def has_add_permission(self, request, obj=None):
         return False
-
-    readonly_fields = ("active", "name", "origin_id", "contractor")
