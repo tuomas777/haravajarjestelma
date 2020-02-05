@@ -4,25 +4,17 @@
 
 ## Development with Docker
 
-1. Create `.env` environment file
+1. Copy `docker-compose.env.yaml.example` to `docker-compose.env.yaml` and modify it if needed.
 
-2. Set the `DEBUG` environment variable to `1`
+2. Run `docker-compose up`
 
-3. Run `docker-compose up`
+3. Import geo data
+    * `docker exec -it haravajarjestelma-backend python manage.py geo_import --municipalities finland`
+    * `docker exec -it haravajarjestelma-backend python manage.py geo_import --divisions helsinki`
+    * `docker exec -it haravajarjestelma-backend python manage.py geo_import --addresses helsinki`
+    * `docker exec -it haravajarjestelma-backend python manage.py import_helsinki_contract_zones`
 
-4. Run migrations if needed: 
-    * `docker exec haravajarjestelma python manage.py migrate`
-
-5. Create superuser if needed: 
-    * `docker exec -it haravajarjestelma python manage.py createsuperuser`
-
-6. Import geo data
-    * `docker exec -it haravajarjestelma python manage.py geo_import --municipalities finland`
-    * `docker exec -it haravajarjestelma python manage.py geo_import --divisions helsinki`
-    * `docker exec -it haravajarjestelma python manage.py geo_import --addresses helsinki`
-    * `docker exec -it haravajarjestelma python manage.py import_helsinki_contract_zones`
-
-The project is now running at [localhost:8000](http://localhost:8000)
+The project is now running at [localhost:8085](http://localhost:8085)
 
 ## Development without Docker
 
@@ -78,9 +70,9 @@ Import geo data
 
 * Set the `DEBUG` environment variable to `1`.
 * Run `python manage.py migrate`
-* Run `python manage.py runserver 0:8000`
+* Run `python manage.py runserver 0:8085`
 
-The project is now running at [localhost:8000](http://localhost:8000)
+The project is now running at [localhost:8085](http://localhost:8085)
 
 ### Periodic tasks
 
