@@ -1,8 +1,10 @@
 import os
+import subprocess
 
 import environ
-import raven
+import sentry_sdk
 from django.utils.translation import ugettext_lazy as _
+from sentry_sdk.integrations.django import DjangoIntegration
 
 checkout_dir = environ.Path(__file__) - 2
 assert os.path.exists(checkout_dir("manage.py"))
@@ -35,6 +37,7 @@ env = environ.Env(
     MAIL_MAILGUN_DOMAIN=(str, ""),
     MAIL_MAILGUN_API=(str, ""),
     SENTRY_DSN=(str, ""),
+    SENTRY_ENVIRONMENT=(str, ""),
     CORS_ORIGIN_WHITELIST=(list, []),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
     NOTIFICATIONS_ENABLED=(bool, False),
@@ -50,11 +53,6 @@ env = environ.Env(
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
-
-try:
-    version = raven.fetch_git_sha(checkout_dir())
-except Exception:
-    version = None
 
 BASE_DIR = str(checkout_dir)
 
@@ -83,7 +81,17 @@ if env("MAIL_MAILGUN_KEY"):
 EMAIL_BACKEND = "mailer.backend.DbBackend"
 MAILER_EMAIL_BACKEND = env.str("MAILER_EMAIL_BACKEND")
 
-RAVEN_CONFIG = {"dsn": env.str("SENTRY_DSN"), "release": version}
+try:
+    version = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip()
+except Exception:
+    version = "n/a"
+
+sentry_sdk.init(
+    dsn=env.str("SENTRY_DSN"),
+    release=version,
+    environment=env("SENTRY_ENVIRONMENT"),
+    integrations=[DjangoIntegration()],
+)
 
 MEDIA_ROOT = env("MEDIA_ROOT")
 STATIC_ROOT = env("STATIC_ROOT")
@@ -112,7 +120,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
-    "raven.contrib.django.raven_compat",
     "rest_framework",
     "rest_framework_gis",
     "corsheaders",
@@ -121,6 +128,7 @@ INSTALLED_APPS = [
     "parler",
     "anymail",
     "mailer",
+    "utils",
     "events",
     "users",
     "areas",

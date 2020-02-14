@@ -1,7 +1,6 @@
 django-environ
 Django
 psycopg2-binary
-raven
 djangorestframework
 django-cors-headers
 django-helusers
@@ -14,3 +13,4 @@ holidays
 django-enumfields
 django-ilmoitin
 factory_boy
+sentry-sdk
