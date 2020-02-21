@@ -16,7 +16,7 @@ from events.notifications import NotificationType
 def notification_template_event_created():
     return NotificationTemplate.objects.language("fi").create(
         type=NotificationType.EVENT_CREATED.value,
-        subject="test event created subject, event: {{ event.name }}! user is official: {{ user.is_official }}!",
+        subject="test event created subject, event: {{ event.name }}! user is official: {{ user and user.is_official }}!",
         body_html="<b>test event created body HTML!</b>",
         body_text="test event created body text!",
     )
@@ -56,34 +56,19 @@ def notification_template_event_approved_to_official():
 def notification_template_event_reminder():
     return NotificationTemplate.objects.language("fi").create(
         type=NotificationType.EVENT_REMINDER.value,
-        subject="hello {{ user.first_name }}! don't forget event {{ event.name }}!",
+        subject="hello! don't forget event {{ event.name }}!",
         body_html="<b>test event reminder body HTML!</b>",
         body_text="test event reminder body text!",
     )
 
 
-def test_event_created_notification_is_sent_to_contractor_and_admin(
-    contract_zone, user, notification_template_event_created, official
-):
-    contract_zone.contractor_user = user
-    contract_zone.save(update_fields=("contractor_user",))
-
+def test_event_created_notification_is_sent_to_contractor_and_admin(contract_zone, notification_template_event_created, official):
     event = EventFactory()
 
     assert len(mail.outbox) == 2
     subject_str = "test event created subject, event: {}! user is official: {}!"
-    assert mail.outbox[0].subject == subject_str.format(event.name, False)
+    assert mail.outbox[0].subject == subject_str.format(event.name, None)
     assert mail.outbox[1].subject == subject_str.format(event.name, True)
-
-
-def test_event_created_notification_is_not_sent_to_other_contractor(
-    contract_zone, user, notification_template_event_created
-):
-    assert contract_zone.contractor_user != user
-
-    EventFactory()
-
-    assert len(mail.outbox) == 0
 
 
 def test_notification_is_not_sent_when_event_modified_or_deleted(
@@ -108,11 +93,8 @@ def test_event_approved_to_organizer_notification_is_sent_to_organizer_and_contr
     notification_template_event_approved_to_organizer,
     notification_template_event_approved_to_contractor,
     notification_template_event_approved_to_official,
-    contractor,
     official,
 ):
-    contract_zone.contractor_user = contractor
-    contract_zone.save(update_fields=("contractor_user",))
 
     event = EventFactory(
         state=Event.WAITING_FOR_APPROVAL, organizer_email="organizer@example.com"
@@ -132,10 +114,8 @@ def test_event_approved_to_organizer_notification_is_sent_to_organizer_and_contr
 
 @pytest.mark.parametrize("vacation_involved", (True, False))
 def test_event_reminder_notification_is_sent_to_contractor_in_time(
-    contract_zone, contractor, notification_template_event_reminder, vacation_involved
+    contract_zone, notification_template_event_reminder, vacation_involved
 ):
-    contract_zone.contractor_user = contractor
-    contract_zone.save(update_fields=("contractor_user",))
 
     if vacation_involved:
         # now = Friday, events on Tuesday should be the latest to get the reminder
@@ -165,8 +145,6 @@ def test_event_reminder_notification_is_sent_to_contractor_in_time(
     call_command("send_event_reminder_notifications")
 
     assert len(mail.outbox) == 1
-    assert mail.outbox[0].subject == "hello {}! don't forget event {}!".format(
-        contractor.first_name, event.name
-    )
+    assert mail.outbox[0].subject == "hello! don't forget event {}!".format(event.name)
 
     freezer.stop()

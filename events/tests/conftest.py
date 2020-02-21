@@ -13,7 +13,8 @@ def contract_zone():
     return ContractZoneFactory(
         boundary=MultiPolygon(
             Polygon(((24, 60), (25, 60), (25, 61), (24, 61), (24, 60)))
-        )
+        ),
+        email="john@example.com",
     )
 
 

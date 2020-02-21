@@ -87,8 +87,6 @@ class ContractZone(models.Model):
     def get_contact_email(self):
         if self.email:
             return self.email
-        if self.contractor_user:
-            return self.contractor_user.email
         return None
 
 
