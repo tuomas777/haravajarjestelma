@@ -36,13 +36,11 @@ class ContractZone(models.Model):
     contractor = models.CharField(
         verbose_name=_("contractor"), max_length=255, blank=True
     )
-    contractor_user = models.ForeignKey(
+    contractor_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        verbose_name=_("contractor user"),
+        verbose_name=_("contractor users"),
         related_name="contract_zones",
-        null=True,
         blank=True,
-        on_delete=models.SET_NULL,
     )
     active = models.BooleanField(verbose_name=_("active"), default=True)
 

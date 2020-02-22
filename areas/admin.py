@@ -21,7 +21,7 @@ class ContractZoneAdmin(OSMGeoAdmin):
         "contact_person",
         "phone",
         "email",
-        "contractor_user",
+        "contractor_users",
     )
     readonly_fields = (
         "active",
