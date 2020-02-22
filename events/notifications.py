@@ -76,9 +76,7 @@ def send_event_reminder_notification(event):
         return
 
     send_notification(
-        contact_email,
-        NotificationType.EVENT_REMINDER.value,
-        {"event": event, "user": event.contract_zone.contractor_user},
+        contact_email, NotificationType.EVENT_REMINDER.value, {"event": event}
     )
 
     event.reminder_sent_at = now()
@@ -93,11 +91,7 @@ def _send_notifications_to_contractor_and_officials(
 
     contact_email = event.contract_zone.get_contact_email()
     if contact_email:
-        send_notification(
-            contact_email,
-            notification_type_contractor,
-            {"event": event, "user": event.contract_zone.contractor_user},
-        )
+        send_notification(contact_email, notification_type_contractor, {"event": event})
     else:
         logger.warning(
             'Contract zone {} has no contact email so cannot send "{}" notification there.'.format(
@@ -106,8 +100,4 @@ def _send_notifications_to_contractor_and_officials(
         )
 
     for official in User.objects.filter(is_official=True):
-        send_notification(
-            official.email,
-            notification_type_official,
-            {"event": event, "user": official},
-        )
+        send_notification(official.email, notification_type_official, {"event": event})

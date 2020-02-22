@@ -8,7 +8,6 @@ from rest_framework.reverse import reverse
 from common.tests.utils import get
 from events.factories import EventFactory
 from events.models import Event
-from users.factories import UserFactory
 
 from ..factories import ContractZoneFactory
 
@@ -93,9 +92,7 @@ def test_get_list_official_check_stats(
     assert response_data["results"] == [expected_data]
 
 
-def test_get_list_official_check_contact_data(
-    contract_zone, official_api_client
-):
+def test_get_list_official_check_contact_data(contract_zone, official_api_client):
     response_data = get(official_api_client, LIST_URL)
 
     assert len(response_data["results"]) == 1
