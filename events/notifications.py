@@ -67,17 +67,18 @@ def send_event_approved_notification(event):
 
 
 def send_event_reminder_notification(event):
-    contact_email = event.contract_zone.get_contact_email()
+    contact_emails = event.contract_zone.get_contact_emails()
 
-    if not contact_email:
+    if not contact_emails:
         logger.warning(
             'Contract zone {} has no contact email so cannot send "event_reminder" notification there.'
         ).format(event.contract_zone)
         return
 
-    send_notification(
-        contact_email, NotificationType.EVENT_REMINDER.value, {"event": event}
-    )
+    for email in contact_emails:
+        send_notification(
+            email, NotificationType.EVENT_REMINDER.value, {"event": event}
+        )
 
     event.reminder_sent_at = now()
     event.save(update_fields=("reminder_sent_at",))
@@ -89,9 +90,10 @@ def _send_notifications_to_contractor_and_officials(
     if not notification_type_official:
         notification_type_official = notification_type_contractor
 
-    contact_email = event.contract_zone.get_contact_email()
-    if contact_email:
-        send_notification(contact_email, notification_type_contractor, {"event": event})
+    contact_emails = event.contract_zone.get_contact_emails()
+    if contact_emails:
+        for email in contact_emails:
+            send_notification(email, notification_type_contractor, {"event": event})
     else:
         logger.warning(
             'Contract zone {} has no contact email so cannot send "{}" notification there.'.format(

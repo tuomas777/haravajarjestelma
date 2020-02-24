@@ -7,6 +7,7 @@ from django.utils.timezone import localtime, now
 from django_ilmoitin.models import NotificationTemplate
 from freezegun import freeze_time
 
+from common.utils import assert_to_addresses
 from events.factories import EventFactory
 from events.models import Event
 from events.notifications import NotificationType
@@ -62,15 +63,21 @@ def notification_template_event_reminder():
     )
 
 
-def test_event_created_notification_is_sent_to_contractor_and_admin(
+def test_event_created_notification_is_sent_to_contractors_and_admin(
     contract_zone, notification_template_event_created, official
 ):
+    contract_zone.secondary_email = "mark@example.com"
+    contract_zone.save()
     event = EventFactory()
 
-    assert len(mail.outbox) == 2
+    assert len(mail.outbox) == 3
     subject_str = "test event created subject, event: {}!".format(event.name)
     assert mail.outbox[0].subject == subject_str
     assert mail.outbox[1].subject == subject_str
+    assert mail.outbox[2].subject == subject_str
+    assert_to_addresses(
+        official.email, contract_zone.email, contract_zone.secondary_email
+    )
 
 
 def test_notification_is_not_sent_when_event_modified_or_deleted(
@@ -87,7 +94,7 @@ def test_notification_is_not_sent_when_event_modified_or_deleted(
     assert len(mail.outbox) == 0
 
 
-def test_event_approved_to_organizer_notification_is_sent_to_organizer_and_contractor_and_official(
+def test_event_approved_to_organizer_notification_is_sent_to_organizer_and_contractors_and_official(
     contract_zone,
     user,
     notification_template_event_approved_to_organizer,
@@ -95,7 +102,8 @@ def test_event_approved_to_organizer_notification_is_sent_to_organizer_and_contr
     notification_template_event_approved_to_official,
     official,
 ):
-
+    contract_zone.secondary_email = "mark@example.com"
+    contract_zone.save()
     event = EventFactory(
         state=Event.WAITING_FOR_APPROVAL, organizer_email="organizer@example.com"
     )
@@ -103,17 +111,25 @@ def test_event_approved_to_organizer_notification_is_sent_to_organizer_and_contr
     event.state = Event.APPROVED
     event.save()
 
-    assert len(mail.outbox) == 3
+    assert len(mail.outbox) == 4
     subject_str = "hello {}! event {} approved!"
 
     assert mail.outbox[0].to == ["organizer@example.com"]
     assert mail.outbox[0].subject == subject_str.format("organizer", event.name)
     assert mail.outbox[1].subject == subject_str.format("contractor", event.name)
-    assert mail.outbox[2].subject == subject_str.format("official", event.name)
+    assert mail.outbox[2].subject == subject_str.format("contractor", event.name)
+    assert mail.outbox[3].subject == subject_str.format("official", event.name)
+
+    assert_to_addresses(
+        event.organizer_email,
+        contract_zone.email,
+        contract_zone.secondary_email,
+        official.email,
+    )
 
 
 @pytest.mark.parametrize("vacation_involved", (True, False))
-def test_event_reminder_notification_is_sent_to_contractor_in_time(
+def test_event_reminder_notification_is_sent_to_contractors_in_time(
     contract_zone, notification_template_event_reminder, vacation_involved
 ):
 
@@ -144,7 +160,10 @@ def test_event_reminder_notification_is_sent_to_contractor_in_time(
 
     call_command("send_event_reminder_notifications")
 
-    assert len(mail.outbox) == 1
-    assert mail.outbox[0].subject == "hello! don't forget event {}!".format(event.name)
+    assert len(mail.outbox) == 2
+    subject_str = "hello! don't forget event {}!".format(event.name)
+    assert mail.outbox[0].subject == subject_str
+    assert mail.outbox[1].subject == subject_str
+    assert_to_addresses(contract_zone.email, contract_zone.secondary_email)
 
     freezer.stop()

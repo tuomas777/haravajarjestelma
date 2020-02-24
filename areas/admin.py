@@ -21,6 +21,9 @@ class ContractZoneAdmin(OSMGeoAdmin):
         "contact_person",
         "phone",
         "email",
+        "secondary_contact_person",
+        "secondary_phone",
+        "secondary_email",
         "contractor_users",
     )
     readonly_fields = (
@@ -31,6 +34,9 @@ class ContractZoneAdmin(OSMGeoAdmin):
         "contact_person",
         "phone",
         "email",
+        "secondary_contact_person",
+        "secondary_phone",
+        "secondary_email",
     )
 
     def has_add_permission(self, request, obj=None):

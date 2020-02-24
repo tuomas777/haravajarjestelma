@@ -33,6 +33,13 @@ class ContractZone(models.Model):
     )
     email = models.EmailField(verbose_name=_("email"), blank=True)
     phone = models.CharField(verbose_name=_("phone"), max_length=255, blank=True)
+    secondary_contact_person = models.CharField(
+        verbose_name=_("secondary contact person"), max_length=255, blank=True
+    )
+    secondary_email = models.EmailField(verbose_name=_("secondary email"), blank=True)
+    secondary_phone = models.CharField(
+        verbose_name=_("secondary phone"), max_length=255, blank=True
+    )
     contractor = models.CharField(
         verbose_name=_("contractor"), max_length=255, blank=True
     )
@@ -82,10 +89,8 @@ class ContractZone(models.Model):
 
         return list(sorted(too_early_dates | too_many_events_dates))
 
-    def get_contact_email(self):
-        if self.email:
-            return self.email
-        return None
+    def get_contact_emails(self):
+        return [email for email in (self.email, self.secondary_email) if email]
 
 
 def get_affected_dates(date):
