@@ -36,6 +36,13 @@ def test_user_get(user_api_client, lookup):
         "uuid": str(user.uuid),
         "first_name": user.first_name,
         "last_name": user.last_name,
-        "is_official": user.is_official,
-        "is_contractor": user.is_contractor,
+        "is_official": False,
+        "is_contractor": False,
     }
+
+
+@pytest.mark.parametrize("is_contractor", (True, False))
+def test_user_get_is_contractor(user_api_client, contractor_api_client, is_contractor):
+    api_client = contractor_api_client if is_contractor else user_api_client
+    response_data = get(api_client, BASE_URL + "me/")
+    assert response_data["is_contractor"] is is_contractor

@@ -1,6 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 
+from areas.factories import ContractZoneFactory
 from common.tests.conftest import *  # noqa
 from users.factories import UserFactory
 
@@ -12,7 +13,10 @@ def user():
 
 @pytest.fixture
 def contractor():
-    return UserFactory(is_contractor=True)
+    user = UserFactory()
+    contract_zone = ContractZoneFactory()
+    contract_zone.contractor_users.add(user)
+    return user
 
 
 @pytest.fixture
