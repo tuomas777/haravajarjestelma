@@ -5,7 +5,6 @@ from helusers.models import AbstractUser
 
 class User(AbstractUser):
     is_official = models.BooleanField(verbose_name=_("official"), default=False)
-    is_contractor = models.BooleanField(verbose_name=_("contractor"), default=False)
 
     class Meta:
         verbose_name = _("user")

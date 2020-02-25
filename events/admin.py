@@ -9,5 +9,5 @@ class EventAdmin(OSMGeoAdmin):
     default_lon = 2776460  # Central Railway Station in EPSG:3857
     default_lat = 8438120
     default_zoom = 10
-    list_display = ("name", "start_time", "end_time")
+    list_display = ("name", "start_time", "end_time", "contract_zone")
     readonly_fields = ("contract_zone",)

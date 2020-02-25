@@ -8,7 +8,6 @@ from rest_framework.reverse import reverse
 from common.tests.utils import get
 from events.factories import EventFactory
 from events.models import Event
-from users.factories import UserFactory
 
 from ..factories import ContractZoneFactory
 
@@ -93,32 +92,11 @@ def test_get_list_official_check_stats(
     assert response_data["results"] == [expected_data]
 
 
-@pytest.mark.parametrize("contact_fields_populated", [True, False])
-@pytest.mark.parametrize("has_contractor", [True, False])
-def test_get_list_official_check_contact_data(
-    contract_zone, official_api_client, contact_fields_populated, has_contractor
-):
-    if has_contractor:
-        user = UserFactory()
-        contract_zone.contractor_user = user
-        contract_zone.save(update_fields=("contractor_user",))
-    if not contact_fields_populated:
-        contract_zone.contact_person = contract_zone.email = ""
-        contract_zone.save(update_fields=("contact_person", "email"))
-
+def test_get_list_official_check_contact_data(contract_zone, official_api_client):
     response_data = get(official_api_client, LIST_URL)
 
     assert len(response_data["results"]) == 1
     contract_zone_data = response_data["results"][0]
-    if contact_fields_populated:
-        assert contract_zone_data["contact_person"] == contract_zone.contact_person
-        assert contract_zone_data["email"] == contract_zone.email
-    elif has_contractor:
-        assert contract_zone_data["contact_person"] == "{} {}".format(
-            user.first_name, user.last_name
-        )
-        assert contract_zone_data["email"] == user.email
-    else:
-        assert contract_zone_data["contact_person"] == ""
-        assert contract_zone_data["email"] == ""
+    assert contract_zone_data["contact_person"] == contract_zone.contact_person
+    assert contract_zone_data["email"] == contract_zone.email
     assert contract_zone_data["phone"] == contract_zone.phone

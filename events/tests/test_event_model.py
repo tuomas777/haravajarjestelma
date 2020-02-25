@@ -35,3 +35,17 @@ def test_contract_zone_autopopulating():
     new_event.clean()
     new_event.save()
     assert new_event.contract_zone == zone_2
+
+
+@pytest.mark.parametrize(
+    "email, secondary_email, expected",
+    (
+        ("foo@example.com", "", ["foo@example.com"]),
+        ("", "bar@example.com", ["bar@example.com"]),
+        ("foo@example.com", "bar@example.com", ["foo@example.com", "bar@example.com"]),
+        ("", "", []),
+    ),
+)
+def test_get_contact_emails(email, secondary_email, expected):
+    contract_zone = ContractZoneFactory(email=email, secondary_email=secondary_email)
+    assert contract_zone.get_contact_emails() == expected
