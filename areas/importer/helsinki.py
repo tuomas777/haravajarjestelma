@@ -29,6 +29,7 @@ class HelsinkiImporter:
             "TYPENAME": "Vastuualue_rya_urakkarajat",
             "SRSNAME": "EPSG:{}".format(settings.DEFAULT_SRID),
             "cql_filter": "tehtavakokonaisuus='PUISTO' and status='voimassa'",
+            "outputFormat": "application/json",
         }
         wfs_url = "{}?{}".format(
             settings.HELSINKI_WFS_BASE_URL, urllib.parse.urlencode(query_params)
