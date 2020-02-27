@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from django.conf import settings
@@ -8,11 +9,14 @@ from common.utils import get_today, is_vacation_day, ONE_DAY
 from events.models import Event
 from events.notifications import send_event_reminder_notification
 
+logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     help = "Send event reminder notifications to contractors"
 
     def handle(self, *args, **options):
+        logger.info("Sending event reminder notifications (if needed)")
         today = get_today()
 
         for event in Event.objects.filter(reminder_sent_at=None):
