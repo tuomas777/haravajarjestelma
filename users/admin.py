@@ -1,5 +1,7 @@
-from django.contrib.admin import ModelAdmin, register, TabularInline
+from django.contrib.admin import register, TabularInline
 from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.utils.translation import ugettext_lazy as _
 
 User = get_user_model()
 
@@ -10,22 +12,9 @@ class ContractZoneInline(TabularInline):
 
 
 @register(User)
-class UserAdmin(ModelAdmin):
-    fields = (
-        "username",
-        "first_name",
-        "last_name",
-        "email",
-        "date_joined",
-        "last_login",
-        "is_active",
-        "is_superuser",
-        "is_official",
-        "department_name",
-        "ad_groups",
-    )
+class UserAdmin(DjangoUserAdmin):
     inlines = (ContractZoneInline,)
-
-    def get_readonly_fields(self, request, obj=None):
-        fields = ("date_joined", "last_login")
-        return fields + ("username",) if obj else fields
+    fieldsets = DjangoUserAdmin.fieldsets + (
+        (_("AD groups"), {"fields": ("ad_groups",)}),
+        (_("Roles"), {"fields": ("is_official",)}),
+    )
