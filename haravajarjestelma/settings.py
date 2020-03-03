@@ -50,6 +50,7 @@ env = environ.Env(
     EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE=(int, 3),
     EVENT_REMINDER_DAYS_IN_ADVANCE=(int, 2),
     HELSINKI_WFS_BASE_URL=(str, "https://kartta.hel.fi/ws/geoserver/avoindata/wfs"),
+    LOG_LEVEL=(str, "INFO"),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
@@ -194,6 +195,22 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("helusers.oidc.ApiTokenAuthentication",),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+}
+
+LOG_LEVEL = env("LOG_LEVEL")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "timestamped_named": {
+            "format": "%(asctime)s %(name)s %(levelname)s: %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "timestamped_named"}
+    },
+    "loggers": {"": {"handlers": ["console"], "level": LOG_LEVEL}},
 }
 
 # local_settings.py can be used to override settings
