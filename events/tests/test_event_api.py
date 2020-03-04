@@ -125,8 +125,7 @@ def test_contractor_get_list_check_only_own_received(
     contractor_api_client, event, is_zones_contractor_user
 ):
     if is_zones_contractor_user:
-        event.contract_zone.contractor_user = contractor_api_client.user
-        event.contract_zone.save(update_fields=("contractor_user",))
+        event.contract_zone.contractor_users.add(contractor_api_client.user)
 
     results = get(contractor_api_client, LIST_URL)["results"]
 
@@ -138,8 +137,7 @@ def test_contractor_get_detail_check_only_own_received(
     contractor_api_client, event, is_zones_contractor_user
 ):
     if is_zones_contractor_user:
-        event.contract_zone.contractor_user = contractor_api_client.user
-        event.contract_zone.save(update_fields=("contractor_user",))
+        event.contract_zone.contractor_users.add(contractor_api_client.user)
 
     get(
         contractor_api_client,
@@ -214,8 +212,7 @@ def test_contractor_cannot_modify_or_delete_other_than_own_event(
 
 
 def test_contractor_can_modify_and_delete_own_event(contractor_api_client, event):
-    event.contract_zone.contractor_user = contractor_api_client.user
-    event.contract_zone.save(update_fields=("contractor_user",))
+    event.contract_zone.contractor_users.add(contractor_api_client.user)
     url = get_detail_url(event)
 
     put(contractor_api_client, url, EVENT_DATA)

@@ -29,6 +29,7 @@ class HelsinkiImporter:
             "TYPENAME": "Vastuualue_rya_urakkarajat",
             "SRSNAME": "EPSG:{}".format(settings.DEFAULT_SRID),
             "cql_filter": "tehtavakokonaisuus='PUISTO' and status='voimassa'",
+            "outputFormat": "application/json",
         }
         wfs_url = "{}?{}".format(
             settings.HELSINKI_WFS_BASE_URL, urllib.parse.urlencode(query_params)
@@ -53,10 +54,19 @@ class HelsinkiImporter:
             data = {
                 "name": str(feat["nimi"]),
                 "boundary": feat.geom.geos,
-                "contractor": str(feat["urakoitsija"]),
-                "contact_person": str(feat["vastuuhlo"]),
-                "email": str(feat["vastuuhlo_email"]),
-                "phone": str(feat["vastuuhlo_puh"]),
+                "contractor": self._get_attribute_safe(feat, "urakoitsija"),
+                "contact_person": self._get_attribute_safe(feat, "talkoot"),
+                "email": self._get_attribute_safe(feat, "talkoot_email"),
+                "phone": self._get_attribute_safe(feat, "talkoot_puh"),
+                "secondary_contact_person": self._get_attribute_safe(
+                    feat, "talkoot_varahlo"
+                ),
+                "secondary_email": self._get_attribute_safe(
+                    feat, "talkoot_varahlo_email"
+                ),
+                "secondary_phone": self._get_attribute_safe(
+                    feat, "talkoot_varahlo_puh"
+                ),
                 "origin_id": str(feat["id"]),
                 "active": True,
             }
@@ -82,6 +92,13 @@ class HelsinkiImporter:
             syncher.mark(contract_zone)
 
         syncher.finish()
+
+    @staticmethod
+    def _get_attribute_safe(feature, attribute):
+        try:
+            return str(feature[attribute])
+        except IndexError:
+            return ""
 
     @staticmethod
     def _deactivate_contract_zone(contract_zone):

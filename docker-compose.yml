@@ -1,35 +1,39 @@
-version: '3'
+version: '3.7'
 services:
     postgres:
-        build: ./docker/postgres/
+        image: helsinkitest/postgis:10-2.5-alpine
+        restart: on-failure
         environment:
             POSTGRES_USER: haravajarjestelma
             POSTGRES_PASSWORD: haravajarjestelma
             POSTGRES_DB: haravajarjestelma
         ports:
-            - "5432:5432"
+            - 5434:5432
         volumes:
-            - haravajarjestelma-postgres-data-volume:/var/lib/postgresql/data
+          - pgdata:/var/lib/postgresql/data
         container_name: haravajarjestelma-db
 
     django:
         build:
-            context: ./
-            dockerfile: ./docker/django/Dockerfile
-        command: python manage.py runserver 0:8000
+            context: .
+            target: development
         env_file:
-            - ./.env
+            - docker-compose.env.yaml
         environment:
             DATABASE_URL: postgres://haravajarjestelma:haravajarjestelma@haravajarjestelma-db/haravajarjestelma
+            DATABASE_HOST: haravajarjestelma-db.helsinki
         volumes:
-            - .:/code
-            - haravajarjestelma-django-media-volume:/var/media/
+            - .:/app
         ports:
-            - "8000:8000"
+            - 8085:8085
         depends_on:
             - postgres
-        container_name: haravajarjestelma
+        container_name: haravajarjestelma-backend
 
 volumes:
-        haravajarjestelma-postgres-data-volume:
-        haravajarjestelma-django-media-volume:
+    pgdata:
+        driver: local
+
+networks:
+    default:
+        name: helsinki

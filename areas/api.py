@@ -224,21 +224,11 @@ class ContractZoneSerializer(ContractZoneSerializerBase):
 
     @classmethod
     def _get_contact_person_display(cls, contract_zone):
-        if contract_zone.contact_person:
-            return contract_zone.contact_person
-        user = contract_zone.contractor_user
-        if user:
-            return "{} {}".format(user.first_name, user.last_name).strip()
-        return ""
+        return contract_zone.contact_person or ""
 
     @classmethod
     def _get_email_display(cls, contract_zone):
-        if contract_zone.email:
-            return contract_zone.email
-        user = contract_zone.contractor_user
-        if user:
-            return user.email
-        return ""
+        return contract_zone.email or ""
 
 
 class ContractZoneFilter(filters.FilterSet):
@@ -260,6 +250,6 @@ class ContractZoneFilter(filters.FilterSet):
 
 
 class ContractZoneViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ContractZone.objects.all().select_related("contractor_user")
+    queryset = ContractZone.objects.all()
     serializer_class = ContractZoneSerializer
     filterset_class = ContractZoneFilter

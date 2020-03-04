@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import holidays
+from django.core import mail
 from django.utils.timezone import localtime, now
 
 ONE_DAY = timedelta(days=1)
@@ -22,3 +23,13 @@ def date_range(start, end):
 
 def is_vacation_day(date):
     return date.isoweekday() in (SATURDAY, SUNDAY) or date in HOLIDAYS_FINLAND
+
+
+def assert_to_addresses(*expected_to_addresses, mails=None):
+    if mails is None:
+        mails = mail.outbox
+    to_addresses = set((m.to[0] for m in mails))
+    expected_to_addresses = set(expected_to_addresses)
+    assert (
+        to_addresses == expected_to_addresses
+    ), f"{to_addresses} does not match {expected_to_addresses}"

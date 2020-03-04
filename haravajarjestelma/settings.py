@@ -1,8 +1,10 @@
 import os
+import subprocess
 
 import environ
-import raven
+import sentry_sdk
 from django.utils.translation import ugettext_lazy as _
+from sentry_sdk.integrations.django import DjangoIntegration
 
 checkout_dir = environ.Path(__file__) - 2
 assert os.path.exists(checkout_dir("manage.py"))
@@ -35,26 +37,23 @@ env = environ.Env(
     MAIL_MAILGUN_DOMAIN=(str, ""),
     MAIL_MAILGUN_API=(str, ""),
     SENTRY_DSN=(str, ""),
+    SENTRY_ENVIRONMENT=(str, ""),
     CORS_ORIGIN_WHITELIST=(list, []),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
     NOTIFICATIONS_ENABLED=(bool, False),
-    TOKEN_AUTH_ACCEPTED_AUDIENCE=(str, ""),
+    TOKEN_AUTH_ACCEPTED_AUDIENCE=(str, "https://api.hel.fi/auth/puistotalkoot"),
     TOKEN_AUTH_ACCEPTED_SCOPE_PREFIX=(str, ""),
     TOKEN_AUTH_AUTHSERVER_URL=(str, ""),
     TOKEN_AUTH_FIELD_FOR_CONSENTS=(str, ""),
-    TOKEN_AUTH_REQUIRE_SCOPE_PREFIX=(bool, True),
+    TOKEN_AUTH_REQUIRE_SCOPE_PREFIX=(bool, False),
     EVENT_MINIMUM_DAYS_BEFORE_START=(int, 7),
     EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE=(int, 3),
     EVENT_REMINDER_DAYS_IN_ADVANCE=(int, 2),
     HELSINKI_WFS_BASE_URL=(str, "https://kartta.hel.fi/ws/geoserver/avoindata/wfs"),
+    LOG_LEVEL=(str, "INFO"),
 )
 if os.path.exists(env_file):
     env.read_env(env_file)
-
-try:
-    version = raven.fetch_git_sha(checkout_dir())
-except Exception:
-    version = None
 
 BASE_DIR = str(checkout_dir)
 
@@ -83,7 +82,17 @@ if env("MAIL_MAILGUN_KEY"):
 EMAIL_BACKEND = "mailer.backend.DbBackend"
 MAILER_EMAIL_BACKEND = env.str("MAILER_EMAIL_BACKEND")
 
-RAVEN_CONFIG = {"dsn": env.str("SENTRY_DSN"), "release": version}
+try:
+    version = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip()
+except Exception:
+    version = "n/a"
+
+sentry_sdk.init(
+    dsn=env.str("SENTRY_DSN"),
+    release=version,
+    environment=env("SENTRY_ENVIRONMENT"),
+    integrations=[DjangoIntegration()],
+)
 
 MEDIA_ROOT = env("MEDIA_ROOT")
 STATIC_ROOT = env("STATIC_ROOT")
@@ -112,7 +121,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
-    "raven.contrib.django.raven_compat",
     "rest_framework",
     "rest_framework_gis",
     "corsheaders",
@@ -121,6 +129,7 @@ INSTALLED_APPS = [
     "parler",
     "anymail",
     "mailer",
+    "utils",
     "events",
     "users",
     "areas",
@@ -186,6 +195,22 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("helusers.oidc.ApiTokenAuthentication",),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+}
+
+LOG_LEVEL = env("LOG_LEVEL")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "timestamped_named": {
+            "format": "%(asctime)s %(name)s %(levelname)s: %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "timestamped_named"}
+    },
+    "loggers": {"": {"handlers": ["console"], "level": LOG_LEVEL}},
 }
 
 # local_settings.py can be used to override settings
