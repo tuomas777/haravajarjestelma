@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.utils import timezone
 from django.utils.timezone import localtime
+from freezegun import freeze_time
 from rest_framework.reverse import reverse
 
 from areas.factories import ContractZoneFactory
@@ -58,6 +59,20 @@ EVENT_DATA = {
     "trash_picker_count": 7,
     "equipment_information": "Ei lisätietoja tarvikkeista.",
 }
+
+
+@pytest.fixture(autouse=True)
+def set_frozen_time():
+    freezer = freeze_time("2018-11-01T08:00:00Z")
+    freezer.start()
+    yield
+    freezer.stop()
+
+
+@pytest.fixture(autouse=True)
+def override_settings(settings):
+    settings.EVENT_MINIMUM_DAYS_BEFORE_START = 7
+    settings.EVENT_MAXIMUM_COUNT_PER_CONTRACT_ZONE = 3
 
 
 def check_received_event_data(event_data, event_obj):
@@ -283,3 +298,31 @@ def test_event_cannot_be_created_in_approved_state(api_client, contract_zone):
 
     new_event = Event.objects.latest("id")
     assert new_event.state == Event.WAITING_FOR_APPROVAL
+
+
+def test_event_cannot_be_created_when_days_are_full(
+    official_api_client, contract_zone, settings
+):
+    events = EventFactory.create_batch(
+        3, start_time=EVENT_DATA["start_time"], end_time=EVENT_DATA["end_time"]
+    )
+    assert all(event.contract_zone == contract_zone for event in events)
+
+    ret = post(official_api_client, LIST_URL, EVENT_DATA, 400)
+    assert "Unavailable dates" in ret["non_field_errors"][0]
+
+
+def test_event_can_be_modified_when_days_are_full(
+    official_api_client, contract_zone, settings
+):
+    events = EventFactory.create_batch(
+        3, start_time=EVENT_DATA["start_time"], end_time=EVENT_DATA["end_time"]
+    )
+    assert all(event.contract_zone == contract_zone for event in events)
+    event = events[0]
+    EVENT_DATA["name"] = "Modified name"
+
+    put(official_api_client, get_detail_url(event), EVENT_DATA)
+
+    event.refresh_from_db()
+    assert event.name == "Modified name"
